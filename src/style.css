@@ -1,0 +1,9 @@
+#canvas{
+    height: 500px;
+    width: 800px;
+    background-color: rgba(6, 2, 60, 0.995);
+    position: absolute;
+    border: 1px solid #9C9898;
+    top: 65px;
+    left: 265px;
+}
