@@ -68,21 +68,21 @@ var keycode = {
 
 const move = function (dir, distance) {
     if (dir == "up" && this.y - distance > 0) {
-        ctx.clearRect(this.x, this.y, this.size, this.size);
+        this.clear()
         this.y -= distance;
         this.draw();
     } else if (dir == "down" && this.y + distance + 10 < canvas.height) {
-        ctx.clearRect(this.x, this.y, this.size, this.size);
+        this.clear()
         this.y += distance;
         this.draw();
     }
     else if (dir == "right" && this.x + distance + 10 < canvas.width) {
-        ctx.clearRect(this.x, this.y, this.size, this.size);
+        this.clear()
         this.x += distance;
         this.draw();
     }
     else if (dir == "left" && this.x - distance > 0) {
-        ctx.clearRect(this.x, this.y, this.size, this.size);
+        this.clear();
         this.x -= distance;
         this.draw();
     }
@@ -92,26 +92,31 @@ const draw_elf = function () {
     ctx.drawImage(elf.img,this.x ,this.y , this.size, this.size);
 }
 
+const clear_elf = function () {  
+    ctx.clearRect(this.x, this.y, this.size, this.size);
+}
+
 var elf = {
     img : new Image(),
     size : 10,
     Direction : "right",
+    speed : 20,
     x : 150,
     y : 75,
     draw : draw_elf,
+    clear : clear_elf,
     move : move
 };
 
 elf.img.src = "src\\elf_right.png";
 
 const interval = function () {
-    const speed = 1;
-    elf.move(elf.Direction, speed);
+    elf.move(elf.Direction, elf.speed / 10);
 }
 
-setInterval(interval, 25);
+setInterval(interval, 20);
 
 $("body").keydown(function (e) { 
     elf.Direction = keycode[e.keyCode];
-    elf.img.src = "src\\elf_" + keycode[e.keyCode] + ".png"
+    elf.img.src = "src\\elf_" + keycode[e.keyCode] + ".png";
 });
