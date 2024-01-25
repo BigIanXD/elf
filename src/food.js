@@ -15,4 +15,4 @@ var food = {
         }
     }
 };
-food.img.src = "src\\img\\food.png";
+//food.img.src = "src\\img\\food.png";

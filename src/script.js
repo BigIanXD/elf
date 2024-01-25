@@ -6,5 +6,5 @@ $("body").keydown(function (e) {
 setInterval(doodleInterval, 20);
 
 var onloadFunction = function () {  
-    food.setup();
+    //food.setup();
 }
