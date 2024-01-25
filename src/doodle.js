@@ -41,11 +41,3 @@ const doodleInterval = function () {
     }
     doodle.move(doodle.Direction, doodle.speed);
 }
-
-// setInterval(doodleInterval, 20);
-
-
-// $("body").keydown(function (e) { 
-//     if(keycode[e.keyCode] != undefined)
-//         tmpdirection = keycode[e.keyCode];
-// });

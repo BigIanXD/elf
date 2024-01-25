@@ -1,9 +1,7 @@
 #canvas{
-    height: 500px;
-    width: 800px;
+    height: 600px;
+    width: 1000px;
     background-color: rgba(6, 2, 60, 0.995);
     position: absolute;
     border: 1px solid #9C9898;
-    top: 65px;
-    left: 265px;
 }
