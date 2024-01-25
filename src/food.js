@@ -1,18 +1,19 @@
-var food = {
-    img : new Image(),
-    x : 0,
-    y : 0,
-    size : 5,
-    draw : draw,
-    clear : clear,
-    setup : function () { 
-        for(var i = 0;i < canvasHeight;i++){
-            for(var j = 0;j < canvasWidth;j++){
-                food.x = j * blockSize;
-                food.y = i * blockSize;
-                food.draw();
-            }
+function Food (x, y){
+    this.img =  new Image();
+    this.img.src = "src\\img\\food.png";
+    this.x = x;
+    this.y = y;
+    this.size = 5;
+    this.draw = draw;
+    this.clear = clear;
+};
+
+var foods = []
+var createFood = function () {
+    console.log('create food')
+    for(var i = 0;i < canvasHeight;i++){
+        for(var j = 0;j < canvasWidth;j++){
+            foods.push(new Food(j * blockSize, i * blockSize));
         }
     }
-};
-food.img.src = "src\\img\\food.png";
+}
