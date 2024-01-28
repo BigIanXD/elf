@@ -4,9 +4,10 @@ function Food (x, y){
     this.x = x;
     this.y = y;
     this.size = 5;
-    this.draw = draw;
-    this.clear = clear;
 };
+
+Food.prototype.draw = draw;
+Food.prototype.clear = clear;
 
 var foods = []
 var createFood = function () {

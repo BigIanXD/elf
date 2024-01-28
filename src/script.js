@@ -4,10 +4,10 @@ $("body").keydown(function (e) {
 });
 
 setInterval(doodleInterval, 20);
-// createFood();
-// var onloadFunction = function () {  
-//     console.log('onload')
-//     for(var i=0; i < foods.length; i++){
-//         foods[i].draw();
-//     }
-// }
+createFood();
+var onloadFunction = function () {  
+    console.log('onload')
+    for(var i=0; i < foods.length; i++){
+        foods[i].draw();
+    }
+}

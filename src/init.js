@@ -13,8 +13,8 @@ var keycode = {
 	39: "right"
 };
 const draw = function () {  
-    ctx.drawImage(this.img, this.x, this.y, this.size, this.size);
+    ctx.drawImage(this.img, this.x + ((blockSize - this.size) / 2), this.y + ((blockSize - this.size) / 2), this.size, this.size);
 }
 const clear = function () {
-    ctx.clearRect(this.x, this.y, this.size, this.size);
+    ctx.clearRect(this.x, this.y + ((blockSize - this.size) / 2), this.size + ((blockSize - this.size) / 2), this.size);
 }
