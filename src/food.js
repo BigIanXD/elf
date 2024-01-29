@@ -4,12 +4,22 @@ function Food (x, y){
     this.x = x;
     this.y = y;
     this.size = 5;
+    this.interval = null;
 };
-
+var foods = [];
+//foods.display = 0;
 Food.prototype.draw = draw;
 Food.prototype.clear = clear;
+Food.prototype.touch = function(){
+    if(touch(this.x, this.y, this.size)){
+        clearInterval(this.interval);
+        this.clear();
+        doodle.score+=10;
+    }
+    //foods.display--;
+};
 
-var foods = []
+
 var createFood = function () {
     console.log('create food');
     for(var i = 0;i < canvasHeight;i++){

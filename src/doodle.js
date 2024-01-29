@@ -26,6 +26,8 @@ var doodle = {
     size : 35,
     Direction : "right",
     speed : 4,
+    hp: 3,
+    score: 0,
     x : 0,
     y : 0,
     draw : draw,
@@ -40,4 +42,13 @@ const doodleInterval = function () {
         doodle.img.src = "src\\img\\doodle_" + doodle.Direction + ".png";
     }
     doodle.move(doodle.Direction, doodle.speed);
+}
+
+var touch = function(x, y, distance){
+
+    if(x >= doodle.x-distance && x <= doodle.x+distance 
+        && y >= doodle.y-distance && y <= doodle.y+distance){
+        return 1;
+    }
+    return 0;
 }
