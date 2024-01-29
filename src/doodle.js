@@ -1,19 +1,19 @@
-const move = function (dir, distance) {
-    if (dir == "up" && this.y - distance >= 0) {
+const doodleMove = function (dir, distance) {
+    if (!hasWall(this.x, this.y - blockSize) && dir == "up" && this.y - distance >= 0) {
         this.clear();
         this.y -= distance;
         this.draw();
-    } else if (dir == "down" && this.y + distance + blockSize <= canvas.height) {
+    } else if (!hasWall(this.x, this.y + blockSize) && dir == "down" && this.y + distance + blockSize <= canvas.height) {
         this.clear();
         this.y += distance;
         this.draw();
     }
-    else if (dir == "right" && this.x + distance + blockSize <= canvas.width) {
+    else if (!hasWall(this.x + blockSize, this.y) && dir == "right" && this.x + distance + blockSize <= canvas.width) {
         this.clear();
         this.x += distance;
         this.draw();
     }
-    else if (dir == "left" && this.x - distance >= 0) {
+    else if (!hasWall(this.x - blockSize, this.y) && dir == "left" && this.x - distance >= 0) {
         this.clear();
         this.x -= distance;
         this.draw();
@@ -30,7 +30,7 @@ var doodle = {
     y : 0,
     draw : draw,
     clear : clear,
-    move : move,
+    move : doodleMove,
 };
 
 var tmpdirection = doodle.Direction;

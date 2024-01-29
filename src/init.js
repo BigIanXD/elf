@@ -18,3 +18,25 @@ const draw = function () {
 const clear = function () {
     ctx.clearRect(this.x, this.y + ((blockSize - this.size) / 2), this.size + ((blockSize - this.size) / 2), this.size);
 }
+
+var wall = [];
+for(var i = 0;i <= canvasWidth;i++){
+    wall[i] = [];
+    for(var j = 0;j <= canvasHeight;j++){
+        wall[i][j] = 0;
+    }
+}
+
+const hasWall = function (trueX, trueY) {
+    x = parseInt(trueX / blockSize);
+    y = parseInt(trueY / blockSize);
+
+    
+
+    if(wall[x][y] === 1) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
