@@ -44,4 +44,4 @@ var createWall = function (x1, y1, x2, y2) {
 }
 
 //createWall(0, 7, 25, 7);
-createWall(0, 1, 27, 1);
+createWall(0, 2, 27, 2);
