@@ -28,11 +28,14 @@ for(var i = 0;i <= canvasWidth;i++){
 }
 
 const hasWall = function (trueX, trueY) {
-    x = parseInt(trueX / blockSize);
-    y = parseInt(trueY / blockSize);
-
-    
-
+    var x = parseInt(trueX / blockSize);
+    var y = parseInt(trueY / blockSize);
+    if(trueX % blockSize === 0){
+        x++;
+    }
+    if(trueY % blockSize === 0){
+        y++;
+    }
     if(wall[x][y] === 1) {
         return true;
     }
