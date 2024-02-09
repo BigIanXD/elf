@@ -43,3 +43,4 @@ const hasWall = function (trueX, trueY) {
         return false;
     }
 }
+//nothing
