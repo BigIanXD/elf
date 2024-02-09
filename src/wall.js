@@ -48,3 +48,8 @@ createWall(12, 1, 13, 1);
 createWall(12, 1, 13, 1);
 createWall(14, 1, 16, 1);
 createWall(17, 1, 24, 1);
+createWall(7, 2, 8, 2);
+createWall(10, 2, 11, 2);
+createWall(12, 2, 13, 2);
+createWall(14, 2, 15, 2);
+createWall(17, 2, 18, 2);
