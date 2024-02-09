@@ -45,3 +45,4 @@ var createWall = function (x1, y1, x2, y2) {
 createWall(0, 5, 15, 5);
 createWall(0, 0, 25, 0);
 createWall(0, 14, 25, 14);
+createWall(22, 5, 23, 10);
