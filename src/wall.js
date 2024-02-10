@@ -74,6 +74,9 @@ createWall(16, 6, 18, 6);
 createWall(19, 6, 22, 6);
 createWall(0, 8, 9, 8);
 createWall(16, 8, 25, 8);
+createWall(8, 9, 9, 9);
+createWall(10, 9, 15, 9);
+createWall(16, 9, 17, 9);
 
 
 
