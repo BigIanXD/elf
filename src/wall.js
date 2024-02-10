@@ -45,7 +45,6 @@ var createWall = function (x1, y1, x2, y2) {
 createWall(1, 1, 8, 1);
 createWall(9, 1, 11, 1);
 createWall(12, 1, 13, 1);
-createWall(12, 1, 13, 1);
 createWall(14, 1, 16, 1);
 createWall(17, 1, 24, 1);
 createWall(7, 2, 8, 2);
@@ -53,3 +52,10 @@ createWall(10, 2, 11, 2);
 createWall(12, 2, 13, 2);
 createWall(14, 2, 15, 2);
 createWall(17, 2, 18, 2);
+createWall(1, 3, 6, 3);
+createWall(12, 3, 13, 3);
+createWall(19, 3, 24, 3);
+createWall(1, 4, 1, 7);
+createWall(23, 4, 23, 7);
+createWall(5, 4, 6, 4);
+
