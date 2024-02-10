@@ -11,7 +11,8 @@ var foods = [];
 Food.prototype.draw = draw;
 Food.prototype.clear = clear;
 Food.prototype.touch = function(){
-    if(touch(this.x, this.y, this.size)){
+    if(touch(this.x, this.y, 40)){
+        console.log(this.interval)
         clearInterval(this.interval);
         this.clear();
         doodle.score+=10;

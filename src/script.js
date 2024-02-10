@@ -9,6 +9,6 @@ var onloadFunction = function () {
     console.log('onload')
     for(var i=0; i < foods.length; i++){
         foods[i].draw();
-        foods[i].interval = setInterval(foods[i].touch, 20);
+        foods[i].interval = setInterval('foods[i].touch()', 10);
     }
 }

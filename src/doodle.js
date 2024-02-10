@@ -45,10 +45,11 @@ const doodleInterval = function () {
 }
 
 var touch = function(x, y, distance){
-
+    //console.log(`${x},${y}`)
     if(x >= doodle.x-distance && x <= doodle.x+distance 
         && y >= doodle.y-distance && y <= doodle.y+distance){
-        return 1;
+            
+        return true;
     }
-    return 0;
+    return false;
 }
