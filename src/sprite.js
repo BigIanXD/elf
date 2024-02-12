@@ -5,12 +5,22 @@ class Sprite{
         this.y = y;
         this.size = size;
         this.display = true;
+        this.paddingX = 0;
+        this.paddingY = padding;
     }
     draw(){
-        ctx.drawImage(this.img, this.x + ((blockSize - this.size) / 2), this.y + ((blockSize - this.size) / 2), this.size, this.size);
+        if(this.display===true){
+            ctx.save();
+            ctx.scale(dpr, dpr);
+            ctx.drawImage(this.img, this.paddingX+this.x + ((blockSize - this.size) / 2), this.paddingY+this.y + ((blockSize - this.size) / 2), this.size, this.size);
+            ctx.restore();
+        }
     }
     clear(){
-        ctx.clearRect(this.x, this.y + ((blockSize - this.size) / 2), this.size + ((blockSize - this.size) / 2), this.size);
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(this.paddingX+this.x, this.paddingY+this.y + ((blockSize - this.size) / 2), this.size + ((blockSize - this.size) / 2), this.size);
+        ctx.restore();
     }
     hide(){
         this.display = false;

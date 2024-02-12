@@ -8,21 +8,21 @@ class Doodle extends Sprite{
     }
     move(dir, distance){
         if (dir == "up" && this.y - distance >= 0) {
-            this.clear();
+            //this.clear();
             this.y -= distance;
             this.draw();
-        } else if (dir == "down" && this.y + distance + blockSize <= canvas.height) {
-            this.clear();
+        } else if (dir == "down" && this.y + distance + blockSize <= playBoard.height) {
+            //this.clear();
             this.y += distance;
             this.draw();
         }
-        else if (dir == "right" && this.x + distance + blockSize <= canvas.width) {
-            this.clear();
+        else if (dir == "right" && this.x + distance + blockSize <= playBoard.width) {
+            //this.clear();
             this.x += distance;
             this.draw();
         }
         else if (dir == "left" && this.x - distance >= 0) {
-            this.clear();
+            //this.clear();
             this.x -= distance;
             this.draw();
         }
