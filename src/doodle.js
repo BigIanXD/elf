@@ -7,22 +7,23 @@ class Doodle extends Sprite{
         this.score = 0;
     }
     move(dir, distance){
-        if (dir == "up" && this.y - distance >= 0 && !hasWall(this.x, this.y - blockSize) ) {
-            this.clear();
+        if (dir == "up" && this.y - distance >= 0 && !hasWall(this.x, this.y - blockSize)) {
+            //this.clear();
             this.y -= distance;
             this.draw();
-        } else if (dir == "down" && this.y + distance + blockSize <= canvas.height && !hasWall(this.x, this.y + blockSize)) {
-            this.clear();
+        } else if (dir == "down" && this.y + distance + blockSize <= playBoard.height  && !hasWall(this.x, this.y + blockSize)) {
+            //this.clear();
             this.y += distance;
             this.draw();
         }
-        else if (dir == "right" && this.x + distance + blockSize <= canvas.width && !hasWall(this.x + blockSize, this.y)) {
-            this.clear();
+        else if (dir == "right" && this.x + distance + blockSize <= playBoard.width && !hasWall(this.x + blockSize, this.y)) {
+            //this.clear();
             this.x += distance;
             this.draw();
         }
         else if (dir == "left" && this.x - distance >= 0 && !hasWall(this.x - blockSize, this.y)) {
-            this.clear();
+            //this.clear();
+>>>>>>> score
             this.x -= distance;
             this.draw();
         }

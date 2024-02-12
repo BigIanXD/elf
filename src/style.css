@@ -1,7 +1,16 @@
+body{
+    background-color: rgba(4, 1, 51, 0.995);
+    overflow: hidden;
+}
 #canvas{
     height: 600px;
     width: 1000px;
     background-color: rgba(4, 1, 51, 0.995);
     position: absolute;
     border: 1px solid #9C9898;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
 }
