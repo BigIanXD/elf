@@ -13,14 +13,21 @@ const canvas_before_zoom = {
 const dpr = window.devicePixelRatio;
 var zoom; // canvas/playBoard
 function resetResolution(){
-	console.log(window.innerHeight)
-	canvas.height = Math.round(window.innerHeight*dpr);
-	zoom = canvas.height/canvas_before_zoom.height;
-	canvas.width = Math.round(canvas_before_zoom.width*zoom);
-
-	canvas.style.height = window.innerHeight+'px';
-	console.log(canvas.style.height);
-	canvas.style.width = Math.round(canvas.width/dpr)+'px';
+	let canvas_aspect = canvas_before_zoom.width/canvas_before_zoom.height;
+	let window_aspect = window.innerWidth/window.innerHeight;
+	if(window_aspect > canvas_aspect){
+		canvas.height = Math.round(window.innerHeight*dpr);
+		zoom = canvas.height/canvas_before_zoom.height;
+		canvas.width = Math.round(canvas_before_zoom.width*zoom);
+		canvas.style.height = window.innerHeight+'px';
+		canvas.style.width = Math.round(canvas.width/dpr)+'px';
+	}else{
+		canvas.width = Math.round(window.innerWidth*dpr);
+		zoom = canvas.width/canvas_before_zoom.width;
+		canvas.height = Math.round(canvas_before_zoom.height*zoom);
+		canvas.style.width = window.innerWidth+'px';
+		canvas.style.height = Math.round(canvas.height/dpr)+'px';
+	}
 }
 resetResolution();
 

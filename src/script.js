@@ -3,7 +3,7 @@ $("body").keydown(function (e) {
         tmpdirection = keycode[e.keyCode];
 });
 
-$("window").on('resize', resetResolution)
+$(window).on('resize', resetResolution);
 
 setInterval(doodleInterval, 20);
 createFood();
