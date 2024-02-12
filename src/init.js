@@ -3,16 +3,26 @@ const ctx = canvas.getContext("2d");
 const playBoard = {
 	height: 600,
 	width: 1000
-}
+};
+
 const padding = 60;
-canvas.height = playBoard.height+padding;
-canvas.width = playBoard.width;
-// high resolution setting
+const canvas_before_zoom = {
+	height: playBoard.height+padding,
+	width: playBoard.width
+};
 const dpr = window.devicePixelRatio;
-canvas.style.height = canvas.height;
-canvas.style.width = canvas.width;
-canvas.height *= dpr;
-canvas.width *= dpr;
+var zoom; // canvas/playBoard
+function resetResolution(){
+	console.log(window.innerHeight)
+	canvas.height = Math.round(window.innerHeight*dpr);
+	zoom = canvas.height/canvas_before_zoom.height;
+	canvas.width = Math.round(canvas_before_zoom.width*zoom);
+
+	canvas.style.height = window.innerHeight+'px';
+	console.log(canvas.style.height);
+	canvas.style.width = Math.round(canvas.width/dpr)+'px';
+}
+resetResolution();
 
 const blockSize = 40;
 const canvasHeight = canvas.height / blockSize;

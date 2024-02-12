@@ -12,7 +12,7 @@ class Label{
         ctx.save();
         ctx.textAlign = this.align;
         ctx.font = this.font;
-        ctx.scale(dpr, dpr);
+        ctx.scale(zoom, zoom);
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotate*(Math.PI/180));
         ctx.fillStyle = this.color;

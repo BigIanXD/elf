@@ -11,14 +11,14 @@ class Sprite{
     draw(){
         if(this.display===true){
             ctx.save();
-            ctx.scale(dpr, dpr);
+            ctx.scale(zoom, zoom);
             ctx.drawImage(this.img, this.paddingX+this.x + ((blockSize - this.size) / 2), this.paddingY+this.y + ((blockSize - this.size) / 2), this.size, this.size);
             ctx.restore();
         }
     }
     clear(){
         ctx.save();
-        ctx.scale(dpr, dpr);
+        ctx.scale(zoom, zoom);
         ctx.clearRect(this.paddingX+this.x, this.paddingY+this.y + ((blockSize - this.size) / 2), this.size + ((blockSize - this.size) / 2), this.size);
         ctx.restore();
     }

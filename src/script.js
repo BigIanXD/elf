@@ -3,6 +3,8 @@ $("body").keydown(function (e) {
         tmpdirection = keycode[e.keyCode];
 });
 
+$("window").on('resize', resetResolution)
+
 setInterval(doodleInterval, 20);
 createFood();
 let score = new Label(1000, 60, "Score: 0");
