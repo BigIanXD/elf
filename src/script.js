@@ -30,6 +30,7 @@ function redraw(){
     ctx.restore();
     score.text = `Score: ${doodle.score}`;
     score.draw();
+    drawWall();
     for(var i=0; i < foods.length; i++){
         foods[i].draw();
     }

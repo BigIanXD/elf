@@ -23,7 +23,6 @@ class Doodle extends Sprite{
         }
         else if (dir == "left" && this.x - distance >= 0 && !hasWall(this.x - blockSize, this.y)) {
             //this.clear();
->>>>>>> score
             this.x -= distance;
             this.draw();
         }
