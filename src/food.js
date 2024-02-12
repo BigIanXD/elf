@@ -1,22 +1,11 @@
 class Food extends Sprite{
     constructor(x, y){
-        super(x, y, 30);
+        super(x, y, 5);
         this.img.src = "src\\img\\food.png";
     }
     
 };
 var foods = [];
-//foods.display = 0;
-/*Food.prototype.touch = function(){
-    if(touch(this.x, this.y, 40)){
-        console.log(this.interval)
-        clearInterval(this.interval);
-        this.clear();
-        doodle.score+=10;
-    }
-    //foods.display--;
-};*/
-
 
 var createFood = function () {
     console.log('create food');
