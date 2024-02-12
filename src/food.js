@@ -1,15 +1,12 @@
-function Food (x, y){
-    this.img =  new Image();
-    this.img.src = "src\\img\\food.png";
-    this.x = x;
-    this.y = y;
-    this.size = 5;
+class Food extends Sprite{
+    constructor(x, y){
+        super(x, y, 5);
+        this.img.src = "src\\img\\food.png";
+    }
+    
 };
+var foods = [];
 
-Food.prototype.draw = draw;
-Food.prototype.clear = clear;
-
-var foods = []
 var createFood = function () {
     console.log('create food');
     for(var i = 0;i < canvasHeight;i++){

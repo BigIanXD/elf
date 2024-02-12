@@ -10,4 +10,13 @@ var onloadFunction = function () {
     for(var i=0; i < foods.length; i++){
         foods[i].draw();
     }
+    setInterval(function(){
+        for(let i=0; i<foods.length; i++){
+            if(doodle.touched(foods[i])){
+                foods[i].hide();
+                doodle.score+=10;
+            }
+        }
+        
+    }, 100)
 }
