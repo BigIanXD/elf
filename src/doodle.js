@@ -2,39 +2,65 @@ class Doodle extends Sprite{
     constructor(x, y){
         super(x, y, 35);
         this.Direction = "right";
+        this.img.src = "src\\img\\doodle_" + this.Direction + ".png";
         this.speed = 4;
         this.hp = 3;
         this.score = 0;
     }
-    move(dir, distance){
-        if (dir == "up" && this.y - distance >= 0 && !hasWall(this.x, this.y - blockSize)) {
-            //this.clear();
-            this.y -= distance;
-            this.draw();
-        } else if (dir == "down" && this.y + distance + blockSize <= playBoard.height  && !hasWall(this.x, this.y + blockSize)) {
-            //this.clear();
-            this.y += distance;
-            this.draw();
-        }
-        else if (dir == "right" && this.x + distance + blockSize <= playBoard.width && !hasWall(this.x + blockSize, this.y)) {
-            //this.clear();
-            this.x += distance;
-            this.draw();
-        }
-        else if (dir == "left" && this.x - distance >= 0 && !hasWall(this.x - blockSize, this.y)) {
-            //this.clear();
-            this.x -= distance;
-            this.draw();
+    move(){
+        if(doodle.Direction === "right") doodle.x+= doodle.speed;
+        else if(doodle.Direction === "left") doodle.x-= doodle.speed;
+        else if(doodle.Direction === "up") doodle.y-= doodle.speed;
+        else doodle.y+= doodle.speed;
+        doodle.draw();
+    }
+    touchWall(dir=this.Direction){
+        let pos = this._get_newly_touched_block(dir);
+        console.log(pos);
+        let blockProperty = current_maze.arr[pos.y][pos.x];
+        if(blockProperty === Block.food){
+            return false;
+        }else{
+            return true;
         }
     }
-};
-var doodle = new Doodle(0, 0);
+    _get_newly_touched_block(dir){
+        let x = this.x/blockSize, y = this.y/blockSize;
+        if(dir === "right") x+= 1;
+        else if(dir === "left") x-= 1;
+        else if(dir === "up") y-= 1;
+        else y+= 1;
+        return new Position(x, y);
+        //get_2nd_closest_block(x, y);
+    }
+    /*get_2nd_closest_block(x, y){
+        if(x%blockSize===0){
+            return new Position(x/blockSize, y/blockSize)
+        }else{ // y %blockSize === 0
 
-var tmpdirection = doodle.Direction;
+        }
+    }*/
+    /*2nd_closest(num){
+        let floor = Math.floor(num);
+        let round = Math.round(num);
+        let ce
+    }*/
+};
+
 const doodleInterval = function () {
     if(doodle.x % blockSize === 0 && doodle.y % blockSize === 0){
-        doodle.Direction = tmpdirection;
-        doodle.img.src = "src\\img\\doodle_" + doodle.Direction + ".png";
+        if(doodle.Direction !== tmpdirection){
+            if(!doodle.touchWall(tmpdirection)){
+                doodle.Direction = tmpdirection;
+                doodle.img.src = "src\\img\\doodle_" + doodle.Direction + ".png";
+            }
+        }
+        if(!doodle.touchWall(doodle.Direction)){
+            doodle.move();
+        }
     }
-    doodle.move(doodle.Direction, doodle.speed);
+    else{
+        doodle.move();
+    }
+    
 }

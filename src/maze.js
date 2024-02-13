@@ -3,7 +3,8 @@
 const Block = {
     food: 0,
     wall: 1,
-    door: 2
+    door: 2,
+    space: 3
 }
 // Load board file
 class Maze{
@@ -15,7 +16,7 @@ class Maze{
         this.foodList = [];
     }
     open(file){
-        fetch(file)
+        return fetch(file)
         .then( (response) => {
             return response.json();
         })
@@ -29,6 +30,7 @@ class Maze{
                     console.log('food')
                     if(this.arr[y][x] === Block.wall){}
                     else if(this.arr[y][x] === Block.door){}
+                    else if(this.arr[y][x] === Block.space){}
                     else{
                         this.arr[y][x] = 0;
                         this.foodList.push(new Food(x * blockSize, y * blockSize));
@@ -61,6 +63,9 @@ class Maze{
     }
     
 }
-
-var maze = new Maze();
-maze.open("src/json/board.json");
+var current_maze;
+var new_maze = new Maze();
+new_maze.open("src/json/board.json")
+    .then(()=>{
+        setMaze(new_maze)
+    });

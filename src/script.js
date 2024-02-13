@@ -1,3 +1,8 @@
+var doodle = new Doodle(0, 0);
+var tmpdirection = doodle.Direction;
+let score = new Label(1000, 60, "Score: 0");
+score.align = "right";
+
 $("body").keydown(function (e) { 
     if(keycode[e.keyCode] != undefined)
         tmpdirection = keycode[e.keyCode];
@@ -5,16 +10,13 @@ $("body").keydown(function (e) {
 
 $(window).on('resize', resetResolution);
 
-setInterval(doodleInterval, 20);
-let score = new Label(1000, 60, "Score: 0");
-score.align = "right";
-
-var onloadFunction = function () {  
+var onloadFunction = function () { 
+    setInterval(doodleInterval, 25);
     console.log('onload')
     setInterval(function(){
-        for(let i=0; i<maze.foodList.length; i++){
-            if(doodle.touched(maze.foodList[i])){
-                maze.foodList[i].hide();
+        for(let i=0; i<current_maze.foodList.length; i++){
+            if(doodle.touched(current_maze.foodList[i])){
+                current_maze.foodList[i].hide();
                 doodle.score+=10;
             }
         }
@@ -29,9 +31,9 @@ function redraw(){
     ctx.restore();
     score.text = `Score: ${doodle.score}`;
     score.draw();
-    maze.draw();
-    for(var i=0; i < maze.foodList.length; i++){
-        maze.foodList[i].draw();
+    current_maze.draw();
+    for(var i=0; i < current_maze.foodList.length; i++){
+        current_maze.foodList[i].draw();
     }
     doodle.draw();
     requestAnimationFrame(redraw);
