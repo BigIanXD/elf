@@ -1,6 +1,6 @@
 class Doodle extends Sprite{
     constructor(x, y){
-        super(x, y, 35);
+        super(x, y, doodleSize);
         this.Direction = "right";
         this.img.src = "src\\img\\doodle_" + this.Direction + ".png";
         this.speed = 4;
@@ -8,11 +8,11 @@ class Doodle extends Sprite{
         this.score = 0;
     }
     move(){
-        if(doodle.Direction === "right") doodle.x+= doodle.speed;
-        else if(doodle.Direction === "left") doodle.x-= doodle.speed;
-        else if(doodle.Direction === "up") doodle.y-= doodle.speed;
-        else doodle.y+= doodle.speed;
-        doodle.draw();
+        if(this.Direction === "right") this.x+= this.speed;
+        else if(this.Direction === "left") this.x-= this.speed;
+        else if(this.Direction === "up") this.y-= this.speed;
+        else this.y+= this.speed;
+        this.draw();
     }
     touchWall(dir=this.Direction){
         let pos = this._get_newly_touched_block(dir);

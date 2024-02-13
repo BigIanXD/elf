@@ -9,6 +9,7 @@ class Position{
 
 
 const blockSize = 40;
+const doodleSize = 35;
 
 var keycode = {
     38: "up",
