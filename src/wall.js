@@ -1,7 +1,7 @@
 var createWall = function (x1, y1, x2, y2) { 
     ctx.save();
     ctx.scale(zoom, zoom);
-    ctx.translate(0, padding);
+    ctx.translate(playBoard.padding.x, playBoard.padding.y);
     if(x1 == x2){
         for(var i = y1;i <= y2;i++){
             wall[x1][i] = 1;

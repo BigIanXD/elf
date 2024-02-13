@@ -1,14 +1,19 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+class Position{
+	constructor(x, y){
+		this.x = x;
+		this.y = y;
+	}
+};
 const playBoard = {
 	height: 600,
-	width: 1000
+	width: 1000,
+	padding: new Position(0, 60)
 };
-
-const padding = 60;
 const canvas_before_zoom = {
-	height: playBoard.height+padding,
-	width: playBoard.width
+	height: playBoard.height+playBoard.padding.y,
+	width: playBoard.width+playBoard.padding.x
 };
 const dpr = window.devicePixelRatio;
 var zoom; // canvas/playBoard

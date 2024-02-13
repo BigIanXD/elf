@@ -6,16 +6,15 @@ $("body").keydown(function (e) {
 $(window).on('resize', resetResolution);
 
 setInterval(doodleInterval, 20);
-createFood();
 let score = new Label(1000, 60, "Score: 0");
 score.align = "right";
 
 var onloadFunction = function () {  
     console.log('onload')
     setInterval(function(){
-        for(let i=0; i<foods.length; i++){
-            if(doodle.touched(foods[i])){
-                foods[i].hide();
+        for(let i=0; i<maze.foodList.length; i++){
+            if(doodle.touched(maze.foodList[i])){
+                maze.foodList[i].hide();
                 doodle.score+=10;
             }
         }
@@ -30,9 +29,9 @@ function redraw(){
     ctx.restore();
     score.text = `Score: ${doodle.score}`;
     score.draw();
-    drawWall();
-    for(var i=0; i < foods.length; i++){
-        foods[i].draw();
+    maze.draw();
+    for(var i=0; i < maze.foodList.length; i++){
+        maze.foodList[i].draw();
     }
     doodle.draw();
     requestAnimationFrame(redraw);

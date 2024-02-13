@@ -5,21 +5,33 @@ class Sprite{
         this.y = y;
         this.size = size;
         this.display = true;
-        this.paddingX = 0;
-        this.paddingY = padding;
+    }
+    static toBoardPos(x, y, size){
+        return new Position(
+            playBoard.padding.x+  x + ((blockSize - size) / 2),
+            playBoard.padding.y+  y + ((blockSize - size) / 2)
+        )
+    }
+    toBoardPos(){
+        return new Position(
+            playBoard.padding.x+  this.x + ((blockSize - this.size) / 2),
+            playBoard.padding.y+  this.y + ((blockSize - this.size) / 2)
+        )
     }
     draw(){
         if(this.display===true){
             ctx.save();
             ctx.scale(zoom, zoom);
-            ctx.drawImage(this.img, this.paddingX+this.x + ((blockSize - this.size) / 2), this.paddingY+this.y + ((blockSize - this.size) / 2), this.size, this.size);
+            let pos = this.toBoardPos();
+            ctx.drawImage(this.img, pos.x, pos.y, this.size, this.size);
             ctx.restore();
         }
     }
     clear(){
         ctx.save();
         ctx.scale(zoom, zoom);
-        ctx.clearRect(this.paddingX+this.x, this.paddingY+this.y + ((blockSize - this.size) / 2), this.size + ((blockSize - this.size) / 2), this.size);
+        let pos = this.toBoardPos();
+        ctx.clearRect(pos.x, pos.y, this.size, this.size);
         ctx.restore();
     }
     hide(){
