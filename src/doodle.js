@@ -3,7 +3,7 @@ class Doodle extends Sprite{
         super(x, y, doodleSize);
         this.Direction = "right";
         this.img.src = "src\\img\\doodle_" + this.Direction + ".png";
-        this.speed = 4;
+        this.speed = doodleStep;
         this.hp = 3;
         this.score = 0;
     }
@@ -16,7 +16,6 @@ class Doodle extends Sprite{
     }
     touchWall(dir=this.Direction){
         let pos = this._get_newly_touched_block(dir);
-        console.log(pos);
         let blockProperty = current_maze.arr[pos.y][pos.x];
         if(blockProperty === Block.food){
             return false;

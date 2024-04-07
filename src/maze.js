@@ -12,7 +12,7 @@ class Maze{
         this.arr = [];
         this.height = 0;
         this.width = 0;
-        this.wallWidth = 25;
+        this.wallWidth = wallWidth;
         this.foodList = [];
     }
     open(file){
@@ -64,8 +64,3 @@ class Maze{
     
 }
 var current_maze;
-var new_maze = new Maze();
-new_maze.open("src/json/board.json")
-    .then(()=>{
-        setMaze(new_maze)
-    });
