@@ -6,6 +6,11 @@ const Block = {
     door: 2,
     space: 3
 }
+
+function isWall(block){
+    if(block === Block.wall || block === Block.door) return true;
+    else return false;
+}
 // Load board file
 class Maze{
     constructor(file){

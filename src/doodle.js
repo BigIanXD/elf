@@ -16,7 +16,7 @@ class Doodle extends Sprite{
     }
     touchWall(dir=this.Direction){
         let pos = this._get_newly_touched_block(dir);
-        console.log(pos);
+        //console.log(pos);
         let blockProperty = current_maze.arr[pos.y][pos.x];
         if(blockProperty === Block.food){
             return false;
