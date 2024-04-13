@@ -40,7 +40,8 @@ function redraw(){
         current_maze.foodList[i].draw();
     }
     doodle.draw();
-    //drawroute(bfs(new Position(0, 0)));
+    ghost.draw();
+    drawroute(ghost.route);
     requestAnimationFrame(redraw);
 }
 
