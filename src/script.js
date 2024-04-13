@@ -12,10 +12,11 @@ $(window).on('resize', resetResolution);
 
 var onloadFunction = function () { 
     setInterval(doodleInterval, 25);
+    setInterval(ghostInterval, 25);
     console.log('onload')
-    setTimeout(function(){
+    /*setTimeout(function(){
         bfs(new Position(0, 0));
-    }, 20)
+    }, 20)*/
     setInterval(function(){
         for(let i=0; i<current_maze.foodList.length; i++){
             if(doodle.touched(current_maze.foodList[i])){
@@ -39,7 +40,7 @@ function redraw(){
         current_maze.foodList[i].draw();
     }
     doodle.draw();
-    drawroute(bfs(new Position(0, 0)));
+    //drawroute(bfs(new Position(0, 0)));
     requestAnimationFrame(redraw);
 }
 

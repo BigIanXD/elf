@@ -1,6 +1,6 @@
 function bfs(startPos){
     let doodlePos = new Position(21, 14);
-    let stack = [];
+    let queue = [];
     let prev = new Array(current_maze.height);
     let visited = new Array(current_maze.height);
     for(let i=0; i<current_maze.height; i++){
@@ -10,26 +10,26 @@ function bfs(startPos){
             visited[i][j] = false;
         }
     }
-    stack.push(startPos);
+    queue.push(startPos);
     visited[startPos.y][startPos.x] = true;
     let c = current_maze;
     let p = startPos;
-    while(stack.length != 0 && !(p.x === doodlePos.x && p.y === doodlePos.y)){
-        p = stack.shift();
+    while(queue.length != 0 && !(p.x === doodlePos.x && p.y === doodlePos.y)){
+        p = queue.shift();
         if(p.y+1<c.height && !isWall(c.arr[p.y+1][p.x]) && !visited[p.y+1][p.x]){
-            stack.push(new Position(p.x, p.y+1));
+            queue.push(new Position(p.x, p.y+1));
             visited[p.y+1][p.x] = true;
             prev[p.y+1][p.x] = p;
         }if(p.y-1>=0 && !isWall(c.arr[p.y-1][p.x]) && !visited[p.y-1][p.x]){
-            stack.push(new Position(p.x, p.y-1));
+            queue.push(new Position(p.x, p.y-1));
             visited[p.y-1][p.x] = true;
             prev[p.y-1][p.x] = p;
         }if(p.x+1<c.width && !isWall(c.arr[p.y][p.x+1]) && !visited[p.y][p.x+1]){
-            stack.push(new Position(p.x+1, p.y));
+            queue.push(new Position(p.x+1, p.y));
             visited[p.y][p.x+1] = true;
             prev[p.y][p.x+1] = p;
         }if(p.x-1>=0 && !isWall(c.arr[p.y][p.x-1]) && !visited[p.y][p.x-1]){
-            stack.push(new Position(p.x-1, p.y));
+            queue.push(new Position(p.x-1, p.y));
             visited[p.y][p.x-1] = true;
             prev[p.y][p.x-1] = p;
         }
@@ -93,11 +93,13 @@ class Ghost extends Sprite{
         return new Position(x, y);
     }
     bfs(){
-        let x = this.x / blockSize, y = this.y / blockSize;
-        let end = new Position(Math.floor(doodle.x/blockSize), Math.floor(doodle.y/blockSize));
+        let mazeheight = current_maze.height;
+        let mazewidth = current_maze.width;
+        let ghostPos = new Position(this.x / blockSize, this.y / blockSize);
+        let doodlePos = new Position(Math.floor(doodle.x/blockSize), Math.floor(doodle.y/blockSize));
         let q = new Queue();
-        let tmppos = new Position(x, y);
-        q.enqueue(tmppos.x, tmppos.y);
+        let p = ghostPos;
+        
         let visited = [];
         for(let i = 0;i < mazeheight;i++){
             visited[i] = [];
@@ -107,59 +109,76 @@ class Ghost extends Sprite{
         }
         let prev = [];
         for(let i = 0;i < mazeheight;i++){
-            prev[i] = [];
+            prev[i] = new Array(mazewidth);
         }
-        while(!q.empty()){
-            tmppos = q.front();
-            if(tmppos.x === end.x && tmppos.y === end.y){
-                while(prev[tmppos.y][tmppos.x].x != end.x && prev[tmppos.y][tmppos.x].y != end.y){
-                    tmppos.x = prev[tmppos.y][tmppos.x].x;
-                    tmppos.y = prev[tmppos.y][tmppos.x].y;
+        q.enqueue(p.x, p.y);
+        visited[ghostPos.y][ghostPos.x] = true;
+        prev[p.y][p.x] = p;
+        let c = current_maze;
+        while(!q.empty() && !(p.x === doodlePos.x && p.y === doodlePos.y)){
+            //console.log(q);
+            p = q.dequeue();
+            
+            if(p.x+1 < mazewidth){
+                if(!visited[p.y][p.x+1] && (current_maze.arr[p.y][p.x+1] === Block.food || current_maze.arr[p.y][p.x+1] === Block.space)){
+                    prev[p.y][p.x+1] = p;
+                    visited[p.y][p.x+1] = true;
+                    q.enqueue(p.x+1, p.y);
                 }
-                if(tmppos.x === this.x){
-                    if(tmppos.y > this.y){
-                        return "up";
-                    }else{
-                        return "down";
-                    }
+            }
+            if(p.x-1 >= 0){
+                if(!visited[p.y][p.x-1] && (current_maze.arr[p.y][p.x-1] === Block.food || current_maze.arr[p.y][p.x-1] === Block.space)){
+                    prev[p.y][p.x-1] = p;
+                    visited[p.y][p.x-1] = true;
+                    q.enqueue(p.x-1, p.y);
+                }
+            }
+            if(p.y+1 < mazeheight){
+                if(!visited[p.y+1][p.x] && (current_maze.arr[p.y+1][p.x] === Block.food || current_maze.arr[p.y+1][p.x] === Block.space)){
+                    prev[p.y+1][p.x] = p;
+                    visited[p.y+1][p.x] = true;
+                    q.enqueue(p.x, p.y+1);
+                }
+            }
+            if(p.y-1 >= 0){
+                if(!visited[p.y-1][p.x] && (current_maze.arr[p.y-1][p.x] === Block.food || current_maze.arr[p.y-1][p.x] === Block.space)){
+                    prev[p.y-1][p.x] = p;
+                    visited[p.y-1][p.x] = true;
+                    q.enqueue(p.x, p.y-1);
+                }
+            }
+        }
+        if(p.x === doodlePos.x && p.y === doodlePos.y){
+            let route = [];
+            /*let pp = p;
+            route.push(pp);
+            while(!(pp.x === ghostPos.x && pp.y === ghostPos.y)){
+                pp = prev[pp.y][pp.x];
+                route.push(pp);
+            }
+            route.reverse();
+            console.log(route);*/
+            while(prev[p.y][p.x].x != ghostPos.x || prev[p.y][p.x].y != ghostPos.y){
+                p = prev[p.y][p.x];
+            }
+            console.log("p", p, "prev", prev[p.y][p.x]);
+            /*if(p.x === this.x){
+                if(p.y > this.y){
+                    return "up";
                 }else{
-                    if(tmppos.x > this.x){
-                        return "right";
-                    }else{
-                        return "left";
-                    }
+                    return "down";
                 }
+            }else{
+                if(p.x > this.x){
+                    return "right";
+                }else{
+                    return "left";
+                }
+            }*/
 
-            }
-            if(tmppos.x+1 < mazewidth){
-                if(!visited[tmppos.y][tmppos.x+1] && (current_maze.arr[tmppos.y][tmppos.x+1] === Block.food || current_maze.arr[tmppos.y][tmppos.x+1] === Block.space)){
-                    prev[tmppos.y][tmppos.x+1] = tmppos;
-                    visited[tmppos.y][tmppos.x+1] = true;
-                    q.enqueue(tmppos.x+1, tmppos.y);
-                }
-            }
-            if(tmppos.x-1 >= 0){
-                if(!visited[tmppos.y][tmppos.x-1] && (current_maze.arr[tmppos.y][tmppos.x-1] === Block.food || current_maze.arr[tmppos.y][tmppos.x-1] === Block.space)){
-                    prev[tmppos.y][tmppos.x-1] = tmppos;
-                    visited[tmppos.y][tmppos.x-1] = true;
-                    q.enqueue(tmppos.x-1, tmppos.y);
-                }
-            }
-            if(tmppos.y+1 < mazeheight){
-                if(!visited[tmppos.y+1][tmppos.x] && (current_maze.arr[tmppos.y+1][tmppos.x] === Block.food || current_maze.arr[tmppos.y+1][tmppos.x] === Block.space)){
-                    prev[tmppos.y+1][tmppos.x] = tmppos;
-                    visited[tmppos.y+1][tmppos.x] = true;
-                    q.enqueue(tmppos.x, tmppos.y+1);
-                }
-            }
-            if(tmppos.y-1 >= 0){
-                if(!visited[tmppos.y-1][tmppos.x] && (current_maze.arr[tmppos.y-1][tmppos.x] === Block.food || current_maze.arr[tmppos.y-1][tmppos.x] === Block.space)){
-                    prev[tmppos.y-1][tmppos.x] = tmppos;
-                    visited[tmppos.y-1][tmppos.x] = true;
-                    q.enqueue(tmppos.x, tmppos.y-1);
-                }
-            }
         }
+        
+    
     }
 }
 
@@ -168,8 +187,10 @@ class Ghost extends Sprite{
 const ghostInterval = function () {
     if(ghost.x % blockSize === 0 && ghost.y % blockSize === 0){
         ghost.Direction = ghost.bfs();
-        ghost.move();
+        //ghost.move();
     }else{
-        ghost.move();
+        //ghost.move();
     }
 }
+var ghost = new Ghost();
+ghost.x = 360; ghost.y = 280
