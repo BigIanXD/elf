@@ -60,3 +60,116 @@ function drawroute(route){
         ctx.restore();
     })
 }
+class Ghost extends Sprite{
+    constructor(x, y){
+        super(x, y, 35);
+        this.Direction = "right";
+        this.img.src = "src\\img\\ghost.png";
+        this.speed = 4;
+    }
+    move(){
+        if(this.Direction === "right") this.x+= this.speed;
+        else if(this.Direction === "left") this.x-= this.speed;
+        else if(this.Direction === "up") this.y-= this.speed;
+        else this.y+= this.speed;
+        this.draw();
+    }
+    touchWall(dir=this.Direction){
+        let pos = this._get_newly_touched_block(dir);
+        console.log(pos);
+        let blockProperty = current_maze.arr[pos.y][pos.x];
+        if(blockProperty === Block.food){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    _get_newly_touched_block(dir){
+        let x = this.x/blockSize, y = this.y/blockSize;
+        if(dir === "right") x+= 1;
+        else if(dir === "left") x-= 1;
+        else if(dir === "up") y-= 1;
+        else y+= 1;
+        return new Position(x, y);
+    }
+    bfs(){
+        let x = this.x / blockSize, y = this.y / blockSize;
+        let end = new Position(Math.floor(doodle.x/blockSize), Math.floor(doodle.y/blockSize));
+        let q = new Queue();
+        let tmppos = new Position(x, y);
+        q.enqueue(tmppos.x, tmppos.y);
+        let visited = [];
+        for(let i = 0;i < mazeheight;i++){
+            visited[i] = [];
+            for(let j = 0;j < mazewidth;j++){
+                visited[i][j] = false;
+            }
+        }
+        let prev = [];
+        for(let i = 0;i < mazeheight;i++){
+            prev[i] = [];
+        }
+        while(!q.empty()){
+            tmppos = q.front();
+            if(tmppos.x === end.x && tmppos.y === end.y){
+                while(prev[tmppos.y][tmppos.x].x != end.x && prev[tmppos.y][tmppos.x].y != end.y){
+                    tmppos.x = prev[tmppos.y][tmppos.x].x;
+                    tmppos.y = prev[tmppos.y][tmppos.x].y;
+                }
+                if(tmppos.x === this.x){
+                    if(tmppos.y > this.y){
+                        return "up";
+                    }else{
+                        return "down";
+                    }
+                }else{
+                    if(tmppos.x > this.x){
+                        return "right";
+                    }else{
+                        return "left";
+                    }
+                }
+
+            }
+            if(tmppos.x+1 < mazewidth){
+                if(!visited[tmppos.y][tmppos.x+1] && (current_maze.arr[tmppos.y][tmppos.x+1] === Block.food || current_maze.arr[tmppos.y][tmppos.x+1] === Block.space)){
+                    prev[tmppos.y][tmppos.x+1] = tmppos;
+                    visited[tmppos.y][tmppos.x+1] = true;
+                    q.enqueue(tmppos.x+1, tmppos.y);
+                }
+            }
+            if(tmppos.x-1 >= 0){
+                if(!visited[tmppos.y][tmppos.x-1] && (current_maze.arr[tmppos.y][tmppos.x-1] === Block.food || current_maze.arr[tmppos.y][tmppos.x-1] === Block.space)){
+                    prev[tmppos.y][tmppos.x-1] = tmppos;
+                    visited[tmppos.y][tmppos.x-1] = true;
+                    q.enqueue(tmppos.x-1, tmppos.y);
+                }
+            }
+            if(tmppos.y+1 < mazeheight){
+                if(!visited[tmppos.y+1][tmppos.x] && (current_maze.arr[tmppos.y+1][tmppos.x] === Block.food || current_maze.arr[tmppos.y+1][tmppos.x] === Block.space)){
+                    prev[tmppos.y+1][tmppos.x] = tmppos;
+                    visited[tmppos.y+1][tmppos.x] = true;
+                    q.enqueue(tmppos.x, tmppos.y+1);
+                }
+            }
+            if(tmppos.y-1 >= 0){
+                if(!visited[tmppos.y-1][tmppos.x] && (current_maze.arr[tmppos.y-1][tmppos.x] === Block.food || current_maze.arr[tmppos.y-1][tmppos.x] === Block.space)){
+                    prev[tmppos.y-1][tmppos.x] = tmppos;
+                    visited[tmppos.y-1][tmppos.x] = true;
+                    q.enqueue(tmppos.x, tmppos.y-1);
+                }
+            }
+        }
+    }
+}
+
+
+
+const ghostInterval = function () {
+    if(ghost.x % blockSize === 0 && ghost.y % blockSize === 0){
+        ghost.Direction = ghost.bfs();
+        ghost.move();
+    }else{
+        ghost.move();
+    }
+}
