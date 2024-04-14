@@ -1,72 +1,11 @@
-function bfs(startPos){
-    let doodlePos = new Position(21, 14);
-    let queue = [];
-    let prev = new Array(current_maze.height);
-    let visited = new Array(current_maze.height);
-    for(let i=0; i<current_maze.height; i++){
-        prev[i] = new Array(current_maze.width);
-        visited[i] = new Array(current_maze.width)
-        for(let j=0; j<current_maze.width; j++){
-            visited[i][j] = false;
-        }
-    }
-    queue.push(startPos);
-    visited[startPos.y][startPos.x] = true;
-    let c = current_maze;
-    let p = startPos;
-    while(queue.length != 0 && !(p.x === doodlePos.x && p.y === doodlePos.y)){
-        p = queue.shift();
-        if(p.y+1<c.height && !isWall(c.arr[p.y+1][p.x]) && !visited[p.y+1][p.x]){
-            queue.push(new Position(p.x, p.y+1));
-            visited[p.y+1][p.x] = true;
-            prev[p.y+1][p.x] = p;
-        }if(p.y-1>=0 && !isWall(c.arr[p.y-1][p.x]) && !visited[p.y-1][p.x]){
-            queue.push(new Position(p.x, p.y-1));
-            visited[p.y-1][p.x] = true;
-            prev[p.y-1][p.x] = p;
-        }if(p.x+1<c.width && !isWall(c.arr[p.y][p.x+1]) && !visited[p.y][p.x+1]){
-            queue.push(new Position(p.x+1, p.y));
-            visited[p.y][p.x+1] = true;
-            prev[p.y][p.x+1] = p;
-        }if(p.x-1>=0 && !isWall(c.arr[p.y][p.x-1]) && !visited[p.y][p.x-1]){
-            queue.push(new Position(p.x-1, p.y));
-            visited[p.y][p.x-1] = true;
-            prev[p.y][p.x-1] = p;
-        }
-    }
-    p = doodlePos;
-    let route = [];
-    route.push(p);
-    while(!(p.x === startPos.x && p.y === startPos.y)){
-        p = prev[p.y][p.x];
-        route.push(p);
-    }
-    route.reverse();
-    return route;
-}
-function drawroute(route){
-    route.forEach(p=>{
-        ctx.save();
-        ctx.scale(zoom, zoom);
-        
-        let pos = Sprite.toBoardPos(p.x*blockSize, p.y*blockSize, 10);
-        ctx.beginPath();
-        ctx.arc(pos.x+5, pos.y+5, 10, 0, 2*Math.PI);
-        ctx.fillStyle = "#ff00ff";
-        ctx.fill();
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = '#003300';
-        ctx.stroke();
-        ctx.restore();
-    })
-}
 class Ghost extends Sprite{
-    constructor(x, y){
+    constructor(id, x, y){
         super(x, y, 35);
         this.Direction = "right";
         this.img.src = "src\\img\\ghost.png";
         this.speed = 2.5;
         this.route = [];
+        this.id = id;
     }
     move(){
         if(this.Direction === "right") this.x+= this.speed;
@@ -78,7 +17,7 @@ class Ghost extends Sprite{
         let pos = this._get_newly_touched_block(dir);
         if(pos.y >= 0 && pos.y < current_maze.height && pos.x >= 0 && pos.x < current_maze.width){
             let blockProperty = current_maze.arr[pos.y][pos.x];
-            if(blockProperty === Block.food){
+            if(blockProperty !== Block.wall){
                 return false;
             }
         }
@@ -92,6 +31,10 @@ class Ghost extends Sprite{
         else if(dir === "down") y+= 1;
         return new Position(x, y);
     }
+    isWall(block){
+        if(block === Block.wall) return true;
+        else return false;
+    }
     bfs(){
         this.route = []
         let mazeheight = current_maze.height;
@@ -99,8 +42,8 @@ class Ghost extends Sprite{
         let ghostPos = new Position(this.x / blockSize, this.y / blockSize);
         let doodlePos = new Position(Math.floor(doodle.x/blockSize), Math.floor(doodle.y/blockSize));
         if(ghostPos.x === doodlePos.x && ghostPos.y === doodlePos.y){
-            if(ghost.x === doodle.x && ghost.y === doodle.y) return "stop";
-            return ghost.Direction;
+            if(this.x === doodle.x && this.y === doodle.y) return "stop";
+            return this.Direction;
         }
         
         let q = new Queue();
@@ -125,28 +68,28 @@ class Ghost extends Sprite{
             p = q.dequeue();
             
             if(p.x+1 < mazewidth){ // right
-                if(!visited[p.y][p.x+1] && !isWall(c.arr[p.y][p.x+1])){
+                if(!visited[p.y][p.x+1] && !this.isWall(c.arr[p.y][p.x+1])){
                     prev[p.y][p.x+1] = p;
                     visited[p.y][p.x+1] = true;
                     q.enqueue(p.x+1, p.y);
                 }
             }
             if(p.x-1 >= 0){ // left
-                if(!visited[p.y][p.x-1] && !isWall(c.arr[p.y][p.x-1])){
+                if(!visited[p.y][p.x-1] && !this.isWall(c.arr[p.y][p.x-1])){
                     prev[p.y][p.x-1] = p;
                     visited[p.y][p.x-1] = true;
                     q.enqueue(p.x-1, p.y);
                 }
             }
             if(p.y+1 < mazeheight){ // down
-                if(!visited[p.y+1][p.x] && !isWall(c.arr[p.y+1][p.x])){
+                if(!visited[p.y+1][p.x] && !this.isWall(c.arr[p.y+1][p.x])){
                     prev[p.y+1][p.x] = p;
                     visited[p.y+1][p.x] = true;
                     q.enqueue(p.x, p.y+1);
                 }
             }
             if(p.y-1 >= 0){ // up
-                if(!visited[p.y-1][p.x] && !isWall(c.arr[p.y-1][p.x])){
+                if(!visited[p.y-1][p.x] && !this.isWall(c.arr[p.y-1][p.x])){
                     prev[p.y-1][p.x] = p;
                     visited[p.y-1][p.x] = true;
                     q.enqueue(p.x, p.y-1);
@@ -161,7 +104,7 @@ class Ghost extends Sprite{
                 this.route.push(pp);
             }
             this.route.reverse();
-            console.log("ghost.route", this.route);
+            //console.log("ghost.route", this.route);
             while(prev[p.y][p.x].x != ghostPos.x || prev[p.y][p.x].y != ghostPos.y){
                 p = prev[p.y][p.x];
             }
@@ -181,23 +124,75 @@ class Ghost extends Sprite{
             }
 
         }
-        
-    
     }
-}
-
-
-
-const ghostInterval = function () {
-    if(ghost.x % blockSize === 0 && ghost.y % blockSize === 0){
-        ghost.Direction = ghost.bfs();
-        console.log(ghost.Direction);
-        if(!ghost.touchWall(ghost.Direction)){
-            ghost.move();
+    drawroute(){
+        this.route.forEach(p=>{
+            ctx.save();
+            ctx.scale(zoom, zoom);
+            
+            let pos = Sprite.toBoardPos(p.x*blockSize, p.y*blockSize, 10);
+            ctx.beginPath();
+            ctx.arc(pos.x+5, pos.y+5, 10, 0, 2*Math.PI);
+            ctx.fillStyle = ghostColor[this.id];
+            ctx.globalAlpha = 0.6;
+            ctx.fill();
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#114411';
+            ctx.stroke();
+            ctx.restore();
+        })
+    }
+    interval(){
+        if(this.x % blockSize === 0 && this.y % blockSize === 0){
+            this.Direction = this.bfs();
+            //console.log(this.Direction);
+            if(!this.touchWall(this.Direction)){
+                this.move();
+            }
+        }else{
+            this.move();
         }
-    }else{
-        ghost.move();
     }
 }
-var ghost = new Ghost();
-ghost.x = 360; ghost.y = 280
+
+var setGhostInterval = function(i){
+    console.log(`startGhost ${i}`);
+    setInterval(function(){
+        ghost[i].interval()
+    }, 25);
+}
+
+var getGhostStartPos = function(){
+    let count = 0;
+    let i = 0, j = 0;
+    for(;i<current_maze.height; i++){
+        for(j=0;j<current_maze.width; j++){
+            if(current_maze.arr[i][j] === Block.space){
+                ghostStartPos[count] = new Position(j*blockSize, i*blockSize);
+                count++;
+                if(count >= 4) return;
+            }
+        }
+    }
+    while(count >= 1 && count < 4){
+        ghostStartPos[count] = ghostStartPos[count-1];
+        count++;
+    }
+}
+
+var ghost = [];
+for(let i = 0; i < 4; i++){
+    ghost.push(new Ghost(i, 0, 0));
+}
+var ghostOutTime = [0, 8, 16, 24];
+var ghostColor = [
+    "#ff0000",
+    "#ff99cc",
+    "#33ffff",
+    "#ffcc33"
+];
+var ghostStartPos = new Array(ghost.length);
+for(let i = 0; i < ghost.length; i++){
+    ghostStartPos[i] = new Position(0, 0);
+}
+//ghost.x = 360; ghost.y = 280

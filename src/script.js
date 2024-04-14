@@ -3,12 +3,16 @@ var tmpdirection = doodle.Direction;
 var score = new Label(1000, 60, "Score: 0");
 score.align = "right";
 var new_maze = new Maze();
+let read_success = false;
 
 new_maze.open("src/json/board.json")
     .then(()=>{
         setMaze(new_maze)
         score.x = playBoard.width;
         score.y = playBoard.padding.y;
+        getDoodleStartPos();
+        getGhostStartPos();
+        read_success = true;
     });
 
 $("body").keydown(function (e) { 
@@ -18,13 +22,19 @@ $("body").keydown(function (e) {
 
 $(window).on('resize', resetResolution);
 
-var onloadFunction = function () { 
-    setInterval(ghostInterval, 25);
+var onloadFunction = function () {
+    //while(!read_success){}
+    for(let i = 0; i < ghost.length; i++){
+        ghost[i].x = ghostStartPos[i].x;
+        ghost[i].y = ghostStartPos[i].y;
+        setTimeout(function(){
+            setGhostInterval(i);
+        }, ghostOutTime[i]*1000);
+    };
+    doodle.x = doodleStartPos.x;
+    doodle.y = doodleStartPos.y;
     setInterval(doodleInterval, doodleStepDelay);
     console.log('onload')
-    /*setTimeout(function(){
-        bfs(new Position(0, 0));
-    }, 20)*/
     setInterval(function(){
         for(let i=0; i<current_maze.foodList.length; i++){
             if(doodle.touched(current_maze.foodList[i])){
@@ -48,8 +58,10 @@ function redraw(){
         current_maze.foodList[i].draw();
     }
     doodle.draw();
-    ghost.draw();
-    drawroute(ghost.route);
+    for(let i = 0; i < 4; i++){
+        ghost[i].draw();
+        ghost[i].drawroute();
+    }
     requestAnimationFrame(redraw);
 }
 

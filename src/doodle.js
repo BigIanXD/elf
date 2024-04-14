@@ -19,7 +19,7 @@ class Doodle extends Sprite{
         //console.log(pos);
         if(pos.y >= 0 && pos.y < current_maze.height && pos.x >= 0 && pos.x < current_maze.width){
             let blockProperty = current_maze.arr[pos.y][pos.x];
-            if(blockProperty === Block.food){
+            if(blockProperty === Block.food || blockProperty === Block.doodleStart){
                 return false;
             }
         }
@@ -64,4 +64,16 @@ const doodleInterval = function () {
         doodle.move();
     }
     
+}
+var doodleStartPos = new Position(0, 0);
+var getDoodleStartPos = function(){
+    let i, j;
+    for(i=0;i<current_maze.height; i++){
+        for(j=0;j<current_maze.width; j++){
+            if(current_maze.arr[i][j] === Block.doodleStart){
+                doodleStartPos = new Position(j*blockSize, i*blockSize);
+                return;
+            }
+        }
+    }
 }

@@ -4,13 +4,10 @@ const Block = {
     food: 0,
     wall: 1,
     door: 2,
-    space: 3
+    space: 3,
+    doodleStart: 4
 }
 
-function isWall(block){
-    if(block === Block.wall || block === Block.door) return true;
-    else return false;
-}
 // Load board file
 class Maze{
     constructor(file){
@@ -36,6 +33,7 @@ class Maze{
                     if(this.arr[y][x] === Block.wall){}
                     else if(this.arr[y][x] === Block.door){}
                     else if(this.arr[y][x] === Block.space){}
+                    else if(this.arr[y][x] === Block.doodleStart){}
                     else{
                         this.arr[y][x] = 0;
                         this.foodList.push(new Food(x * blockSize, y * blockSize));
