@@ -3,7 +3,7 @@ class Doodle extends Sprite{
         super(x, y, doodleSize);
         this.Direction = "right";
         this.img.src = "src\\img\\doodle_" + this.Direction + ".png";
-        this.speed = 4;
+        this.speed = doodleStep;
         this.hp = 3;
         this.score = 0;
     }

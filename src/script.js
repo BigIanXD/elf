@@ -1,7 +1,15 @@
 var doodle = new Doodle(0, 0);
 var tmpdirection = doodle.Direction;
-let score = new Label(1000, 60, "Score: 0");
+var score = new Label(1000, 60, "Score: 0");
 score.align = "right";
+var new_maze = new Maze();
+
+new_maze.open("src/json/board.json")
+    .then(()=>{
+        setMaze(new_maze)
+        score.x = playBoard.width;
+        score.y = playBoard.padding.y;
+    });
 
 $("body").keydown(function (e) { 
     if(keycode[e.keyCode] != undefined)
@@ -11,8 +19,8 @@ $("body").keydown(function (e) {
 $(window).on('resize', resetResolution);
 
 var onloadFunction = function () { 
-    setInterval(doodleInterval, 25);
     setInterval(ghostInterval, 25);
+    setInterval(doodleInterval, doodleStepDelay);
     console.log('onload')
     /*setTimeout(function(){
         bfs(new Position(0, 0));

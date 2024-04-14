@@ -8,8 +8,12 @@ class Position{
 };
 
 
-const blockSize = 40;
-const doodleSize = 35;
+const blockSize = 40; //35
+const doodleSize = 35; //53
+const wallWidth = 25;
+//const wallWidth = blockSize-(doodleSize-blockSize)-2;
+const doodleStep = 5;
+const doodleStepDelay = 30;
 
 var keycode = {
     38: "up",
