@@ -18,7 +18,6 @@ class Doodle extends Sprite{
         let pos = this._get_newly_touched_block(dir);
         //console.log(pos);
         if(pos.y >= 0 && pos.y < current_maze.height && pos.x >= 0 && pos.x < current_maze.width){
-            console.log('hi')
             let blockProperty = current_maze.arr[pos.y][pos.x];
             if(blockProperty === Block.food){
                 return false;
