@@ -5,6 +5,10 @@ score.align = "right";
 var new_maze = new Maze();
 let read_success = false;
 
+var GhostInterval = new Array(ghost.length);
+var GhostTimeout = new Array(ghost.length);
+var DoodleInterval = 0;
+
 new_maze.open("src/json/board.json")
     .then(()=>{
         setMaze(new_maze)
@@ -24,16 +28,8 @@ $(window).on('resize', resetResolution);
 
 var onloadFunction = function () {
     //while(!read_success){}
-    for(let i = 0; i < ghost.length; i++){
-        ghost[i].x = ghostStartPos[i].x;
-        ghost[i].y = ghostStartPos[i].y;
-        setTimeout(function(){
-            setGhostInterval(i);
-        }, ghostOutTime[i]*1000);
-    };
-    doodle.x = doodleStartPos.x;
-    doodle.y = doodleStartPos.y;
-    setInterval(doodleInterval, doodleStepDelay);
+    retry();
+    
     console.log('onload')
     setInterval(function(){
         for(let i=0; i<current_maze.foodList.length; i++){
@@ -65,3 +61,31 @@ function redraw(){
     requestAnimationFrame(redraw);
 }
 
+function die(){
+    console.log("die");
+    doodle.Direction = "stop";
+    for(let i = 0; i < 4; i++){
+        clearInterval(GhostInterval[i]);
+        clearTimeout(GhostTimeout[i])
+    }
+    clearInterval(DoodleInterval);
+    doodle.hp--;
+    setTimeout(function(){
+        retry();
+    }, 2000);
+}
+function retry(){
+    console.log("retry")
+    for(let i = 0; i < ghost.length; i++){
+        GhostInterval[i] = 0;
+        ghost[i].x = ghostStartPos[i].x;
+        ghost[i].y = ghostStartPos[i].y;
+        ghost[i].route = []
+        GhostTimeout[i] = setTimeout(function(){
+            GhostInterval[i] = setGhostInterval(i);
+        }, ghostOutTime[i]*1000);
+    }
+    doodle.x = doodleStartPos.x;
+    doodle.y = doodleStartPos.y;
+    DoodleInterval = setInterval('doodle.interval()', doodleStepDelay);
+}

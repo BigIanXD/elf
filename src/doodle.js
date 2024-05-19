@@ -6,12 +6,13 @@ class Doodle extends Sprite{
         this.speed = doodleStep;
         this.hp = 3;
         this.score = 0;
+        this.noclip = false;
     }
     move(){
         if(this.Direction === "right") this.x+= this.speed;
         else if(this.Direction === "left") this.x-= this.speed;
         else if(this.Direction === "up") this.y-= this.speed;
-        else this.y+= this.speed;
+        else if(this.Direction === "down") this.y+= this.speed;
         this.draw();
     }
     touchWall(dir=this.Direction){
@@ -34,6 +35,31 @@ class Doodle extends Sprite{
         return new Position(x, y);
         //get_2nd_closest_block(x, y);
     }
+    interval(){
+        if(!doodle.noclip){
+            for(let i = 0; i < 4; i++){
+                if(doodle.touched(ghost[i])){
+                    doodle.Direction = "stop";
+                    die();
+                }
+            }
+        }
+        if(doodle.x % blockSize === 0 && doodle.y % blockSize === 0){
+            if(doodle.Direction !== tmpdirection){
+                if(!doodle.touchWall(tmpdirection)){
+                    doodle.Direction = tmpdirection;
+                    doodle.img.src = "src\\img\\doodle_" + doodle.Direction + ".png";
+                }
+            }
+            if(!doodle.touchWall(doodle.Direction)){
+                doodle.move();
+            }
+        }
+        else{
+            doodle.move();
+        }
+        
+    }
     /*get_2nd_closest_block(x, y){
         if(x%blockSize===0){
             return new Position(x/blockSize, y/blockSize)
@@ -48,23 +74,6 @@ class Doodle extends Sprite{
     }*/
 };
 
-const doodleInterval = function () {
-    if(doodle.x % blockSize === 0 && doodle.y % blockSize === 0){
-        if(doodle.Direction !== tmpdirection){
-            if(!doodle.touchWall(tmpdirection)){
-                doodle.Direction = tmpdirection;
-                doodle.img.src = "src\\img\\doodle_" + doodle.Direction + ".png";
-            }
-        }
-        if(!doodle.touchWall(doodle.Direction)){
-            doodle.move();
-        }
-    }
-    else{
-        doodle.move();
-    }
-    
-}
 var doodleStartPos = new Position(0, 0);
 var getDoodleStartPos = function(){
     let i, j;

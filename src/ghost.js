@@ -157,7 +157,7 @@ class Ghost extends Sprite{
 
 var setGhostInterval = function(i){
     console.log(`startGhost ${i}`);
-    setInterval(function(){
+    return setInterval(function(){
         ghost[i].interval()
     }, 25);
 }
@@ -183,6 +183,7 @@ var getGhostStartPos = function(){
 var ghost = [];
 for(let i = 0; i < 4; i++){
     ghost.push(new Ghost(i, 0, 0));
+    ghost[i].img.src = `src/img/ghost${i}.png`;
 }
 var ghostOutTime = [0, 8, 16, 24];
 var ghostColor = [
