@@ -2,12 +2,14 @@ var doodle = new Doodle(0, 0);
 var tmpdirection = doodle.Direction;
 var score = new Label(1000, 60, "Score: 0");
 score.align = "right";
+var hpView = new ViewHP(10, 5);
 var new_maze = new Maze();
 let read_success = false;
 
 var GhostInterval = new Array(ghost.length);
 var GhostTimeout = new Array(ghost.length);
 var DoodleInterval = 0;
+var FoodInterval = 0;
 
 new_maze.open("src/json/board.json")
     .then(()=>{
@@ -31,7 +33,7 @@ var onloadFunction = function () {
     retry();
     
     console.log('onload')
-    setInterval(function(){
+    FoodInterval = setInterval(function(){
         for(let i=0; i<current_maze.foodList.length; i++){
             if(doodle.touched(current_maze.foodList[i])){
                 current_maze.foodList[i].hide();
@@ -49,6 +51,7 @@ function redraw(){
     ctx.restore();
     score.text = `Score: ${doodle.score}`;
     score.draw();
+    hpView.draw();
     current_maze.draw();
     for(var i=0; i < current_maze.foodList.length; i++){
         current_maze.foodList[i].draw();
@@ -69,13 +72,14 @@ function die(){
         clearTimeout(GhostTimeout[i])
     }
     clearInterval(DoodleInterval);
-    doodle.hp--;
     setTimeout(function(){
-        retry();
+        doodle.hp--;
+        if(doodle.hp <= 0) reset();
+        else retry();
     }, 2000);
 }
 function retry(){
-    console.log("retry")
+    console.log("retry");
     for(let i = 0; i < ghost.length; i++){
         GhostInterval[i] = 0;
         ghost[i].x = ghostStartPos[i].x;
@@ -88,4 +92,12 @@ function retry(){
     doodle.x = doodleStartPos.x;
     doodle.y = doodleStartPos.y;
     DoodleInterval = setInterval('doodle.interval()', doodleStepDelay);
+}
+function reset(){
+    doodle.score = 0;
+    doodle.hp = MaxHP;
+    for(let i=0; i<current_maze.foodList.length; i++){
+        current_maze.foodList[i].show();
+    }
+    retry();
 }

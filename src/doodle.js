@@ -4,7 +4,7 @@ class Doodle extends Sprite{
         this.Direction = "right";
         this.img.src = "src\\img\\doodle_" + this.Direction + ".png";
         this.speed = doodleStep;
-        this.hp = 3;
+        this.hp = MaxHP;
         this.score = 0;
         this.noclip = false;
     }
@@ -86,3 +86,20 @@ var getDoodleStartPos = function(){
         }
     }
 }
+
+class ViewHP{
+    constructor(x, y){
+        this.hp = new Array(MaxHP-1);
+        for(let i = 0; i < this.hp.length; i++){
+            let p = new Sprite(x+30*i, y, 25);
+            p.img.src = "src/img/doodle_right.png";
+            p.enablePadding = false;
+            this.hp[i] = p;
+        }
+    }
+    draw(){
+        for(let i = 0; i < doodle.hp-1; i++){
+            this.hp[i].draw();
+        }
+    }
+};

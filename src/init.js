@@ -14,6 +14,7 @@ const wallWidth = 25;
 //const wallWidth = blockSize-(doodleSize-blockSize)-2;
 const doodleStep = 5;
 const doodleStepDelay = 30;
+const MaxHP = 4;
 
 var keycode = {
     38: "up",

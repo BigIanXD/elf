@@ -5,6 +5,7 @@ class Sprite{
         this.y = y;
         this.size = size;
         this.display = true;
+        this.enablePadding = true;
     }
     static toBoardPos(x, y, size){
         return new Position(
@@ -13,16 +14,25 @@ class Sprite{
         )
     }
     toBoardPos(){
-        return new Position(
-            playBoard.padding.x+  this.x + ((blockSize - this.size) / 2),
-            playBoard.padding.y+  this.y + ((blockSize - this.size) / 2)
-        )
+        if(this.enablePadding){
+            return new Position(
+                playBoard.padding.x+  this.x + ((blockSize - this.size) / 2),
+                playBoard.padding.y+  this.y + ((blockSize - this.size) / 2)
+            )
+        }
+        else{
+            return new Position(
+                this.x + ((blockSize - this.size) / 2),
+                this.y + ((blockSize - this.size) / 2)
+            )
+        }
     }
     draw(){
         if(this.display===true){
             ctx.save();
             ctx.scale(zoom, zoom);
-            let pos = this.toBoardPos();
+            let pos = new Position(this.x, this.y);
+            if(this.enablePadding) pos = this.toBoardPos();
             ctx.drawImage(this.img, pos.x, pos.y, this.size, this.size);
             ctx.restore();
         }
@@ -33,6 +43,9 @@ class Sprite{
         let pos = this.toBoardPos();
         ctx.clearRect(pos.x, pos.y, this.size, this.size);
         ctx.restore();
+    }
+    show(){
+        this.display = true;
     }
     hide(){
         this.display = false;
