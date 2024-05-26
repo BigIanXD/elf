@@ -1,11 +1,12 @@
 //import board_json from "json/board.json" assert {type: json};
-//console.log(board_json);
+////console.log(board_json);
 const Block = {
     food: 0,
     wall: 1,
     door: 2,
     space: 3,
-    doodleStart: 4
+    doodleStart: 4,
+    powerPellet: 5
 }
 
 // Load board file
@@ -16,6 +17,7 @@ class Maze{
         this.width = 0;
         this.wallWidth = wallWidth;
         this.foodList = [];
+        this.pelletList = [];
     }
     open(file){
         return fetch(file)
@@ -29,11 +31,14 @@ class Maze{
             this.foodList.splice(0);
             for(let y=0; y<this.height; y++){
                 for(let x=0; x<this.width; x++){
-                    console.log('food')
+                    //console.log('food')
                     if(this.arr[y][x] === Block.wall){}
                     else if(this.arr[y][x] === Block.door){}
                     else if(this.arr[y][x] === Block.space){}
                     else if(this.arr[y][x] === Block.doodleStart){}
+                    else if(this.arr[y][x] === Block.powerPellet){
+                        this.pelletList.push(new Pellet(x * blockSize, y * blockSize));
+                    }
                     else{
                         this.arr[y][x] = 0;
                         this.foodList.push(new Food(x * blockSize, y * blockSize));
@@ -44,6 +49,18 @@ class Maze{
         .catch( (error) => {
             throw new Error(error);
         })
+    }
+    getBlock(blockPos){
+        if(this.isValidBlock(blockPos)){
+            ////console.log(blockPos);
+            return this.arr[blockPos.y][blockPos.x];
+        }
+        else return undefined;
+    }
+    isValidBlock(blockPos){
+        if(blockPos.y >= 0 && blockPos.y < current_maze.height && blockPos.x >= 0 && blockPos.x < current_maze.width)
+            return true;
+        return false;
     }
     draw(){
         for(let y=0; y<this.height; y++){

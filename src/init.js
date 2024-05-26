@@ -16,17 +16,37 @@ const doodleStep = 5;
 const doodleStepDelay = 30;
 const MaxHP = 4;
 
+const Dir = {
+    left: 0,
+    right: 1,
+    up: 2,
+    down: 3,
+    stop: 4
+};
+var dir_to_string = function(i){
+    return ["left", "right", "up", "down", "stop"][i]
+}
+var reverse_dir = function(dir){
+    if(dir === Dir.left) return Dir.right;
+    if(dir === Dir.right) return Dir.left;
+    if(dir === Dir.up) return Dir.down;
+    if(dir === Dir.down) return Dir.up;
+}
 var keycode = {
-    38: "up",
-	40: "down",
-	37: "left",
-	39: "right"
+    38: Dir.up,
+	40: Dir.down,
+	37: Dir.left,
+	39: Dir.right
 };
 const draw = function () {  
     ctx.drawImage(this.img, this.x + ((blockSize - this.size) / 2), this.y + ((blockSize - this.size) / 2), this.size, this.size);
 }
 const clear = function () {
     ctx.clearRect(this.x, this.y + ((blockSize - this.size) / 2), this.size + ((blockSize - this.size) / 2), this.size);
+}
+
+var getRandomInt = function(max){
+    return Math.floor(Math.random()*max)
 }
 
 /*var wall = [];
