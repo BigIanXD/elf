@@ -59,7 +59,8 @@ function redraw(){
     doodle.draw();
     for(let i = 0; i < 4; i++){
         ghost[i].draw();
-        ghost[i].drawroute();
+        if(ghost[i].showRoute)
+            ghost[i].drawroute();
     }
     requestAnimationFrame(redraw);
 }

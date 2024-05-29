@@ -6,6 +6,7 @@ class Ghost extends Sprite{
         this.speed = 2.5;
         this.route = [];
         this.id = id;
+        this.showRoute = false;
     }
     move(){
         if(this.Direction === "right") this.x+= this.speed;
