@@ -17,7 +17,26 @@ class Maze{
         this.wallWidth = wallWidth;
         this.foodList = [];
     }
-    open(file){
+    open(arr){
+        this.arr = arr;
+        this.height = this.arr.length;
+        this.width = this.arr.reduce((max, row) => Math.max(max, row.length), 0);
+        this.foodList.splice(0);
+        for(let y=0; y<this.height; y++){
+            for(let x=0; x<this.width; x++){
+                console.log('food')
+                if(this.arr[y][x] === Block.wall){}
+                else if(this.arr[y][x] === Block.door){}
+                else if(this.arr[y][x] === Block.space){}
+                else if(this.arr[y][x] === Block.doodleStart){}
+                else{
+                    this.arr[y][x] = 0;
+                    this.foodList.push(new Food(x * blockSize, y * blockSize));
+                }
+            }
+        }   
+    }
+    /*open(file){
         return fetch(file)
         .then( (response) => {
             return response.json();
@@ -44,7 +63,7 @@ class Maze{
         .catch( (error) => {
             throw new Error(error);
         })
-    }
+    }*/
     draw(){
         for(let y=0; y<this.height; y++){
             for(let x=0; x<this.width; x++){

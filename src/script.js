@@ -11,15 +11,21 @@ var GhostTimeout = new Array(ghost.length);
 var DoodleInterval = 0;
 var FoodInterval = 0;
 
-new_maze.open("src/json/board.json")
-    .then(()=>{
+new_maze.open(arrwewe)
+setMaze(new_maze)
+score.x = playBoard.width;
+score.y = playBoard.padding.y;
+getDoodleStartPos();
+getGhostStartPos();
+read_success = true;
+    /*.then(()=>{
         setMaze(new_maze)
         score.x = playBoard.width;
         score.y = playBoard.padding.y;
         getDoodleStartPos();
         getGhostStartPos();
         read_success = true;
-    });
+    });*/
 
 $("body").keydown(function (e) { 
     if(keycode[e.keyCode] != undefined)
