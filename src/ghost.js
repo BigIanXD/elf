@@ -269,7 +269,11 @@ class Ghost extends SnappedSprite{
             }
             FrightenedTimeout = setTimeout(function(){
                 console.log('Switch back to Chase Mode');
-                Ghost.switch_mode(GhostMode.Chase);
+                for(let i = 0; i < 4; i++){
+                    if(ghost[i].mode !== GhostMode.Eaten)
+                        ghost[i].switch_mode(GhostMode.Chase);
+                }
+                
             }, 7000)
         }
     }
