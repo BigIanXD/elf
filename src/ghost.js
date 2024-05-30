@@ -1,20 +1,33 @@
-class Ghost extends Sprite{
+const GhostMode = {
+    Chase: 0,
+    Scatter: 1,
+    Frightened: 2,
+    Eaten: 3
+}
+class Ghost extends SnappedSprite{
     constructor(id, x, y){
         super(x, y, 35);
-        this.Direction = "right";
-        this.img.src = "src\\img\\ghost.png";
+        this.Direction = Dir.right;
         this.speed = 2.5;
+        this.obstacle = [Block.wall];
         this.route = [];
+        this.mode = GhostMode.Chase;
         this.id = id;
         this.showRoute = false;
+        this.back_index = 0;
+        this.costume[0].src = "src\\img\\ghost.png";
+        this.costume[1] = new Image();
+        this.costume[1].src = "src\\img\\ghost4.png";
+        this.costume[2] = new Image();
+        this.costume[2].src = "src\\img\\ghost_eyes.png";
     }
-    move(){
-        if(this.Direction === "right") this.x+= this.speed;
-        else if(this.Direction === "left") this.x-= this.speed;
-        else if(this.Direction === "up") this.y-= this.speed;
-        else if(this.Direction === "down") this.y+= this.speed;
-    }
-    touchWall(dir=this.Direction){
+    /*move(){
+        if(this.Direction === Dir.right) this.x+= this.speed;
+        else if(this.Direction === Dir.left) this.x-= this.speed;
+        else if(this.Direction === Dir.up) this.y-= this.speed;
+        else if(this.Direction === Dir.down) this.y+= this.speed;
+    }*/
+    /*touchWall(dir=this.Direction){
         let pos = this._get_newly_touched_block(dir);
         if(pos.y >= 0 && pos.y < current_maze.height && pos.x >= 0 && pos.x < current_maze.width){
             let blockProperty = current_maze.arr[pos.y][pos.x];
@@ -23,29 +36,44 @@ class Ghost extends Sprite{
             }
         }
         return true;
-    }
-    _get_newly_touched_block(dir){
+    }*/
+    /*_get_newly_touched_block(dir){
         let x = this.x/blockSize, y = this.y/blockSize;
-        if(dir === "right") x+= 1;
-        else if(dir === "left") x-= 1;
-        else if(dir === "up") y-= 1;
-        else if(dir === "down") y+= 1;
+        if(dir === Dir.right) x+= 1;
+        else if(dir === Dir.left) x-= 1;
+        else if(dir === Dir.up) y-= 1;
+        else if(dir === Dir.down) y+= 1;
         return new Position(x, y);
-    }
-    isWall(block){
+    }*/
+    /*isWall(block){
         if(block === Block.wall) return true;
         else return false;
+    }*/
+    _detect_dir(from, to){
+        if(from.x === to.x){
+            if(from.y > to.y){
+                return Dir.up;
+            }else{
+                return Dir.down;
+            }
+        }else{
+            if(from.x > to.x){
+                return Dir.left;
+            }else{
+                return Dir.right;
+            }
+        }
     }
-    bfs(){
+    bfs(dest){
+        //console.log('bfs')
         this.route = []
         let mazeheight = current_maze.height;
         let mazewidth = current_maze.width;
-        let ghostPos = new Position(this.x / blockSize, this.y / blockSize);
-        let doodlePos = new Position(Math.floor(doodle.x/blockSize), Math.floor(doodle.y/blockSize));
-        if(ghostPos.x === doodlePos.x && ghostPos.y === doodlePos.y){
-            if(this.x === doodle.x && this.y === doodle.y) return "stop";
-            return this.Direction;
-        }
+        let ghostPos = {};
+        if(this.isGrid(new Position(this.x, this.y)))
+            ghostPos = new Position(this.x/blockSize, this.y/blockSize);
+        else ghostPos = this.try_move(this.Direction, this.speed).new_grid;
+        ////console.log(ghostPos);
         
         let q = new Queue();
         let p = ghostPos;
@@ -65,39 +93,39 @@ class Ghost extends Sprite{
         visited[ghostPos.y][ghostPos.x] = true;
         prev[p.y][p.x] = p;
         let c = current_maze;
-        while(!q.empty() && !(p.x === doodlePos.x && p.y === doodlePos.y)){
+        while(!q.empty() && !(p.x === dest.x && p.y === dest.y)){
             p = q.dequeue();
             
             if(p.x+1 < mazewidth){ // right
-                if(!visited[p.y][p.x+1] && !this.isWall(c.arr[p.y][p.x+1])){
+                if(!visited[p.y][p.x+1] && !this.isObstacle(new Position(p.x+1, p.y))){
                     prev[p.y][p.x+1] = p;
                     visited[p.y][p.x+1] = true;
                     q.enqueue(p.x+1, p.y);
                 }
             }
             if(p.x-1 >= 0){ // left
-                if(!visited[p.y][p.x-1] && !this.isWall(c.arr[p.y][p.x-1])){
+                if(!visited[p.y][p.x-1] && !this.isObstacle(new Position(p.x-1, p.y))){
                     prev[p.y][p.x-1] = p;
                     visited[p.y][p.x-1] = true;
                     q.enqueue(p.x-1, p.y);
                 }
             }
             if(p.y+1 < mazeheight){ // down
-                if(!visited[p.y+1][p.x] && !this.isWall(c.arr[p.y+1][p.x])){
+                if(!visited[p.y+1][p.x] && !this.isObstacle(new Position(p.x, p.y+1))){
                     prev[p.y+1][p.x] = p;
                     visited[p.y+1][p.x] = true;
                     q.enqueue(p.x, p.y+1);
                 }
             }
             if(p.y-1 >= 0){ // up
-                if(!visited[p.y-1][p.x] && !this.isWall(c.arr[p.y-1][p.x])){
+                if(!visited[p.y-1][p.x] && !this.isObstacle(new Position(p.x, p.y-1))){
                     prev[p.y-1][p.x] = p;
                     visited[p.y-1][p.x] = true;
                     q.enqueue(p.x, p.y-1);
                 }
             }
         }
-        if(p.x === doodlePos.x && p.y === doodlePos.y){
+        if(p.x === dest.x && p.y === dest.y){
             let pp = p;
             this.route.push(pp);
             while(!(pp.x === ghostPos.x && pp.y === ghostPos.y)){
@@ -105,26 +133,19 @@ class Ghost extends Sprite{
                 this.route.push(pp);
             }
             this.route.reverse();
-            //console.log("ghost.route", this.route);
-            while(prev[p.y][p.x].x != ghostPos.x || prev[p.y][p.x].y != ghostPos.y){
-                p = prev[p.y][p.x];
-            }
-            let next = p;
-            if(ghostPos.x === next.x){
-                if(ghostPos.y > next.y){
-                    return "up";
-                }else{
-                    return "down";
-                }
-            }else{
-                if(ghostPos.x > next.x){
-                    return "left";
-                }else{
-                    return "right";
-                }
-            }
-
+            ////console.log("ghost.route", this.route);
+            let next = this.route[1];
+            return this._detect_dir(ghostPos, next);
         }
+    }
+    doodle_bfs(){
+        let ghostPos = new Position(this.x / blockSize, this.y / blockSize);
+        let doodlePos = new Position(Math.floor(doodle.x/blockSize), Math.floor(doodle.y/blockSize));
+        if(ghostPos.x === doodlePos.x && ghostPos.y === doodlePos.y){
+            if(this.x === doodle.x && this.y === doodle.y) return Dir.stop;
+            return this.Direction;
+        }
+        return this.bfs(doodlePos);
     }
     drawroute(){
         this.route.forEach(p=>{
@@ -143,21 +164,99 @@ class Ghost extends Sprite{
             ctx.restore();
         })
     }
-    interval(){
+    determine_dir(grid_pos){
+        //console.log('ghost.determine_dir()');
+        if(this.mode === GhostMode.Frightened){
+            let cnt = 0, ho_cnt = 0, ve_cnt =0 ;
+            let next_dir = [];
+            if(!this.touchWall(Dir.left)) {next_dir.push(Dir.left); ho_cnt++; cnt++}
+            if(!this.touchWall(Dir.right)) {next_dir.push(Dir.right); ho_cnt++; cnt++}
+            if(!this.touchWall(Dir.up)) {next_dir.push(Dir.up); ve_cnt++; cnt++}
+            if(!this.touchWall(Dir.down)) {next_dir.push(Dir.down); ve_cnt++; cnt++}
+            next_dir.splice(next_dir.indexOf(reverse_dir(this.Direction)), 1);
+            if(cnt===1){
+                this.Direction = reverse_dir(this.Direction);
+            }else{
+                this.Direction = next_dir[getRandomInt(next_dir.length)];
+            }
+        }else if(this.mode === GhostMode.Eaten){
+            if(this.back_index < this.route.length-1){
+                /*if(this.back_index === 0){
+                    this.Direction = this._detect_dir(grid_pos, this.route[0])
+                }*/
+                //console.log('ghost Eaten ', grid_pos);
+                this.Direction = this._detect_dir(this.route[this.back_index], this.route[this.back_index+1]);
+                this.back_index++;
+            }else{
+                //console.log('bakc')
+                this.back_index = 0;
+                this.switch_mode(GhostMode.Chase);
+            }
+        }else{ // Ghost.Chase
+            this.Direction = this.doodle_bfs();
+            ////console.log(this.Direction);
+        }
+    }
+    /*interval(){
         if(this.x % blockSize === 0 && this.y % blockSize === 0){
-            this.Direction = this.bfs();
-            //console.log(this.Direction);
+            if(this.mode === GhostMode.Frightened){
+                //this.Direction = this.doodle_bfs();
+            }else if(this.mode === GhostMode.Eaten){
+                if(this.back_index < this.route.length-1){
+                    this.Direction = this._detect_dir(this.route[this.back_index], this.route[this.back_index+1]);
+                    this.back_index++;
+                }else{
+                    //console.log('bakc')
+                    this.back_index = 0;
+                    this.switch_mode(GhostMode.Chase);
+                }
+            }else{ // Ghost.Chase
+                this.Direction = this.doodle_bfs();
+                ////console.log(this.Direction);
+            }
             if(!this.touchWall(this.Direction)){
                 this.move();
             }
         }else{
             this.move();
         }
+    }*/
+    switch_mode(mode){
+        let hasInterval = false;
+        if(GhostInterval[this.id]){
+            clearInterval(GhostInterval[this.id]);
+            GhostInterval[this.id] = 0;
+            hasInterval = true;
+        }
+        this.mode = mode;
+        if(mode === GhostMode.Chase){
+            this.switch_costume(0);
+            this.speed = 2.5;
+        }else if(mode=== GhostMode.Scatter){
+            this.switch_costume(0);
+            this.speed = 2.5;
+        }else if(mode === GhostMode.Frightened){
+            this.switch_costume(1);
+            this.speed = 2;
+        }else if(mode === GhostMode.Eaten){
+            this.switch_costume(2);
+            this.speed = 10;
+            this.back_index = 0;
+            this.bfs(ghostStartPos[this.id]);
+            //console.log(this.route);
+        }
+        if(hasInterval)
+            GhostInterval[this.id] = setGhostInterval(this.id);
+    }
+    static switch_mode(mode){
+        for(let i = 0; i < 4; i++){
+            ghost[i].switch_mode(mode);
+        }
     }
 }
 
 var setGhostInterval = function(i){
-    console.log(`startGhost ${i}`);
+    //console.log(`startGhost ${i}`);
     return setInterval(function(){
         ghost[i].interval()
     }, 25);
@@ -169,7 +268,7 @@ var getGhostStartPos = function(){
     for(;i<current_maze.height; i++){
         for(j=0;j<current_maze.width; j++){
             if(current_maze.arr[i][j] === Block.space){
-                ghostStartPos[count] = new Position(j*blockSize, i*blockSize);
+                ghostStartPos[count] = new Position(j, i);
                 count++;
                 if(count >= 4) return;
             }
@@ -184,7 +283,7 @@ var getGhostStartPos = function(){
 var ghost = [];
 for(let i = 0; i < 4; i++){
     ghost.push(new Ghost(i, 0, 0));
-    ghost[i].img.src = `src/img/ghost${i}.png`;
+    ghost[i].costume[0].src = `src/img/ghost${i}.png`;
 }
 var ghostOutTime = [0, 8, 16, 24];
 var ghostColor = [

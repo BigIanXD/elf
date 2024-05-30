@@ -3,7 +3,7 @@ var isMobile = false;
 var doodle = new Doodle(0, 0);
 var tmpdirection = doodle.Direction;
 var score = new Label(1000, 60, "Score: 0");
-score.align = "right";
+score.align = Dir.right;
 var hpView = new ViewHP(10, 5);
 var new_maze = new Maze();
 let read_success = false;
@@ -12,6 +12,7 @@ var GhostInterval = new Array(ghost.length);
 var GhostTimeout = new Array(ghost.length);
 var DoodleInterval = 0;
 var FoodInterval = 0;
+var PelletInterval = 0;
 
 new_maze.open(arrwewe)
 setMaze(new_maze)
@@ -49,16 +50,16 @@ $("body").on("touchmove",function(e){
         X = moveEndX - startX,
         Y = moveEndY - startY;
         if(Math.abs(X) > Math.abs(Y) && X > 0){
-            tmpdirection ="right";
+            tmpdirection = Dir.right;
         }
         else if(Math.abs(X) > Math.abs(Y) && X < 0){
-            tmpdirection = "left";
+            tmpdirection = Dir.left;
         }
         else if(Math.abs(Y) > Math.abs(X) && Y > 0){
-            tmpdirection = "down";
+            tmpdirection = Dir.down;
         }
         else if(Math.abs(Y) > Math.abs(X) && Y < 0){
-            tmpdirection = "up";
+            tmpdirection = Dir.up;
         }
     }
 });
@@ -76,12 +77,21 @@ var onloadFunction = function () {
     //while(!read_success){}
     retry();
     
-    console.log('onload')
+    //console.log('onload')
     FoodInterval = setInterval(function(){
         for(let i=0; i<current_maze.foodList.length; i++){
             if(doodle.touched(current_maze.foodList[i])){
                 current_maze.foodList[i].hide();
-                doodle.score+=10;
+                doodle.score+=Food.score;
+            }
+        }
+    }, 20)
+    PelletInterval = setInterval(function(){
+        for(let i=0; i<current_maze.pelletList.length; i++){
+            if(doodle.touched(current_maze.pelletList[i])){
+                current_maze.pelletList[i].hide();
+                doodle.score+=Pellet.score;
+                Ghost.switch_mode(GhostMode.Frightened);
             }
         }
     }, 20)
@@ -100,6 +110,9 @@ function redraw(){
     for(var i=0; i < current_maze.foodList.length; i++){
         current_maze.foodList[i].draw();
     }
+    for(var i=0; i < current_maze.pelletList.length; i++){
+        current_maze.pelletList[i].draw();
+    }
     doodle.draw();
     for(let i = 0; i < 4; i++){
         ghost[i].draw();
@@ -110,10 +123,11 @@ function redraw(){
 }
 
 function die(){
-    console.log("die");
-    doodle.Direction = "stop";
+    //console.log("die");
+    doodle.Direction = Dir.stop;
     for(let i = 0; i < 4; i++){
         clearInterval(GhostInterval[i]);
+        GhostInterval[i] = 0;
         clearTimeout(GhostTimeout[i])
     }
     clearInterval(DoodleInterval);
@@ -124,11 +138,12 @@ function die(){
     }, 2000);
 }
 function retry(){
-    console.log("retry");
+    //console.log("retry");
+    Ghost.switch_mode(GhostMode.Chase);
     for(let i = 0; i < ghost.length; i++){
         GhostInterval[i] = 0;
-        ghost[i].x = ghostStartPos[i].x;
-        ghost[i].y = ghostStartPos[i].y;
+        ghost[i].x = ghostStartPos[i].x*blockSize;
+        ghost[i].y = ghostStartPos[i].y*blockSize;
         ghost[i].route = []
         GhostTimeout[i] = setTimeout(function(){
             GhostInterval[i] = setGhostInterval(i);
@@ -136,6 +151,8 @@ function retry(){
     }
     doodle.x = doodleStartPos.x;
     doodle.y = doodleStartPos.y;
+    doodle.Direction = Dir.left;
+    doodle.determine_dir(doodle.x/blockSize, doodle.y/blockSize);
     DoodleInterval = setInterval('doodle.interval()', doodleStepDelay);
 }
 function reset(){
@@ -143,6 +160,9 @@ function reset(){
     doodle.hp = MaxHP;
     for(let i=0; i<current_maze.foodList.length; i++){
         current_maze.foodList[i].show();
+    }
+    for(let i=0; i<current_maze.pelletList.length; i++){
+        current_maze.pelletList[i].show();
     }
     retry();
 }
