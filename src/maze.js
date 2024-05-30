@@ -26,7 +26,7 @@ class Maze{
         this.foodList.splice(0);
         for(let y=0; y<this.height; y++){
             for(let x=0; x<this.width; x++){
-                console.log('food')
+                //console.log('food')
                 if(this.arr[y][x] === Block.wall){}
                 else if(this.arr[y][x] === Block.door){}
                 else if(this.arr[y][x] === Block.space){}

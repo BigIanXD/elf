@@ -13,7 +13,8 @@ var GhostTimeout = new Array(ghost.length);
 var DoodleInterval = 0;
 var FoodInterval = 0;
 var PelletInterval = 0;
-var FrightenedInterval = 0;
+var FrightenedTimeout = 0;
+var Frightened_DisablingTimeout = [0, 0, 0, 0];
 var DieInterval = 0;
 
 new_maze.open(arrwewe)
@@ -127,7 +128,10 @@ function die(){
         clearTimeout(GhostTimeout[i])
     }
     clearInterval(DoodleInterval);
-    clearInterval(DieInterval);
+    clearInterval(DieInterval); // Prevent calling die continuously and crashing the game
+    clearTimeout(FrightenedTimeout);
+    for(let i = 0; i < Frightened_DisablingTimeout.length; i++)
+        clearTimeout(Frightened_DisablingTimeout[i]);
     DieInterval = setTimeout(function(){
         doodle.hp--;
         if(doodle.hp <= 0) reset();

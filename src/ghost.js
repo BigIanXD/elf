@@ -20,6 +20,8 @@ class Ghost extends SnappedSprite{
         this.costume[1].src = "src\\img\\ghost4.png";
         this.costume[2] = new Image();
         this.costume[2].src = "src\\img\\ghost_eyes.png";
+        this.costume[3] = new Image();
+        this.costume[3].src = "src\\img\\ghost5.png";
     }
     /*move(){
         if(this.Direction === Dir.right) this.x+= this.speed;
@@ -252,7 +254,24 @@ class Ghost extends SnappedSprite{
         for(let i = 0; i < 4; i++){
             ghost[i].switch_mode(mode);
         }
-        //setTimeout()
+        if(mode === GhostMode.Frightened){
+            clearTimeout(FrightenedTimeout);
+            for(let i = 0; i < Frightened_DisablingTimeout.length; i++)
+                clearTimeout(Frightened_DisablingTimeout[i]);
+            for(let i = 0; i < 4; i++){
+                Frightened_DisablingTimeout[i] = setTimeout(function(){
+                    console.log('Switch ghost Costumes');
+                    for(let j = 0; j < 4; j++){
+                        if(ghost[j].mode === GhostMode.Frightened)
+                            ghost[j].switch_costume((i%2)==0 ? 1: 3);// 3: ghost5.png 1: ghost4.png
+                    }
+                }, 7000-(4-i)*500);
+            }
+            FrightenedTimeout = setTimeout(function(){
+                console.log('Switch back to Chase Mode');
+                Ghost.switch_mode(GhostMode.Chase);
+            }, 7000)
+        }
     }
 }
 
