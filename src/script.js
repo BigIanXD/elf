@@ -13,6 +13,8 @@ var GhostTimeout = new Array(ghost.length);
 var DoodleInterval = 0;
 var FoodInterval = 0;
 var PelletInterval = 0;
+var FrightenedInterval = 0;
+var DieInterval = 0;
 
 new_maze.open(arrwewe)
 setMaze(new_maze)
@@ -107,12 +109,6 @@ function redraw(){
     score.draw();
     hpView.draw();
     current_maze.draw();
-    for(var i=0; i < current_maze.foodList.length; i++){
-        current_maze.foodList[i].draw();
-    }
-    for(var i=0; i < current_maze.pelletList.length; i++){
-        current_maze.pelletList[i].draw();
-    }
     doodle.draw();
     for(let i = 0; i < 4; i++){
         ghost[i].draw();
@@ -131,7 +127,8 @@ function die(){
         clearTimeout(GhostTimeout[i])
     }
     clearInterval(DoodleInterval);
-    setTimeout(function(){
+    clearInterval(DieInterval);
+    DieInterval = setTimeout(function(){
         doodle.hp--;
         if(doodle.hp <= 0) reset();
         else retry();

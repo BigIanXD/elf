@@ -252,6 +252,7 @@ class Ghost extends SnappedSprite{
         for(let i = 0; i < 4; i++){
             ghost[i].switch_mode(mode);
         }
+        //setTimeout()
     }
 }
 

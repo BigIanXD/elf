@@ -1,5 +1,3 @@
-
-
 class Sprite{
     constructor(x, y, size){
         this.costume = [new Image()];

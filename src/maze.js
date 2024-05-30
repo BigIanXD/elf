@@ -102,6 +102,7 @@ class Maze{
             }
         }
         this.foodList.forEach(item=>item.draw());
+        this.pelletList.forEach(item=>item.draw());
     }
     
 }
