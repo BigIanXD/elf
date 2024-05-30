@@ -1,3 +1,5 @@
+var isMobile = false;
+
 var doodle = new Doodle(0, 0);
 var tmpdirection = doodle.Direction;
 var score = new Label(1000, 60, "Score: 0");
@@ -32,9 +34,45 @@ $("body").keydown(function (e) {
         tmpdirection = keycode[e.keyCode];
 });
 
+$("body").on("touchstart",function(e){
+    e.preventDefault();
+    if(isMobile){
+        startX = e.originalEvent.changedTouches[0].pageX,
+        startY = e.originalEvent.changedTouches[0].pageY;
+    }
+});
+$("body").on("touchmove",function(e){
+    e.preventDefault();
+    if(isMobile){
+        moveEndX = e.originalEvent.changedTouches[0].pageX,
+        moveEndY = e.originalEvent.changedTouches[0].pageY,
+        X = moveEndX - startX,
+        Y = moveEndY - startY;
+        if(Math.abs(X) > Math.abs(Y) && X > 0){
+            tmpdirection ="right";
+        }
+        else if(Math.abs(X) > Math.abs(Y) && X < 0){
+            tmpdirection = "left";
+        }
+        else if(Math.abs(Y) > Math.abs(X) && Y > 0){
+            tmpdirection = "down";
+        }
+        else if(Math.abs(Y) > Math.abs(X) && Y < 0){
+            tmpdirection = "up";
+        }
+    }
+});
+
 $(window).on('resize', resetResolution);
 
 var onloadFunction = function () {
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+        // true for mobile device
+        isMobile = true;
+    }else{
+        // false for not mobile device
+        isMobile = false;
+    }
     //while(!read_success){}
     retry();
     
