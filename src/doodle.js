@@ -2,7 +2,10 @@ class Doodle extends SnappedSprite{
     constructor(x, y){
         super(x, y, doodleSize);
         this.Direction = Dir.right;
-        this.costume[0].src = "src\\img\\doodle_" + dir_to_string(this.Direction) + ".png";
+        for(let i = 0; i < 4; i++){
+            this.costume[i] = new Image();
+            this.costume[i].src = "src\\img\\doodle_" + dir_to_string(i) + ".png";
+        }
         this.speed = doodleStep;
         this.obstacle.push(Block.door);
         this.hp = MaxHP;
@@ -56,7 +59,7 @@ class Doodle extends SnappedSprite{
         if(this.Direction !== tmpdirection){
             if(!this.touchWall(tmpdirection)){
                 this.Direction = tmpdirection;
-                this.img.src = "src\\img\\doodle_" + dir_to_string(this.Direction) + ".png";
+                this.switch_costume(this.Direction);
             }
         }
     }

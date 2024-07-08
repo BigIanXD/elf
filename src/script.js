@@ -16,6 +16,7 @@ var PelletInterval = 0;
 var FrightenedTimeout = 0;
 var Frightened_DisablingTimeout = [0, 0, 0, 0];
 var DieInterval = 0;
+var previousStamp = null;
 
 new_maze.open(arrwewe)
 setMaze(new_maze)
@@ -101,7 +102,14 @@ var onloadFunction = function () {
     requestAnimationFrame(redraw)
 }
 
-function redraw(){
+function redraw(timeStamp){
+    if(!previousStamp) previousStamp = timeStamp;
+    else{
+        let duration = (timeStamp - previousStamp)/1000;
+        previousStamp = timeStamp;
+        console.log(`duration:${duration}`);
+        console.log(`fps:${1/duration}`);
+    }
     ctx.save();
     ctx.fillStyle = "rgba(4, 1, 51, 0.995)"
     ctx.fillRect(0, 0, canvas.width, canvas.height);
