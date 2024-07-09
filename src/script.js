@@ -1,4 +1,4 @@
-var isMobile = false;
+var hasTouchScreen = false;
 
 var doodle = new Doodle(0, 0);
 var tmpdirection = doodle.Direction;
@@ -41,14 +41,14 @@ $("body").keydown(function (e) {
 
 $("body").on("touchstart",function(e){
     e.preventDefault();
-    if(isMobile){
+    if(hasTouchScreen){
         startX = e.originalEvent.changedTouches[0].pageX,
         startY = e.originalEvent.changedTouches[0].pageY;
     }
 });
 $("body").on("touchmove",function(e){
     e.preventDefault();
-    if(isMobile){
+    if(hasTouchScreen){
         moveEndX = e.originalEvent.changedTouches[0].pageX,
         moveEndY = e.originalEvent.changedTouches[0].pageY,
         X = moveEndX - startX,
@@ -71,12 +71,12 @@ $("body").on("touchmove",function(e){
 $(window).on('resize', resetResolution);
 
 var onloadFunction = function () {
-    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-        // true for mobile device
-        isMobile = true;
+    if(('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0)){
+        hasTouchScreen = true;
     }else{
-        // false for not mobile device
-        isMobile = false;
+        hasTouchScreen = false;
     }
     //while(!read_success){}
     retry();
