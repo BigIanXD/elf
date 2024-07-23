@@ -36,7 +36,11 @@ var keycode = {
     38: Dir.up,
 	40: Dir.down,
 	37: Dir.left,
-	39: Dir.right
+	39: Dir.right,
+    87: Dir.up, // w
+    65: Dir.left, // a
+    83: Dir.down, // s
+    68: Dir.right // d
 };
 const draw = function () {  
     ctx.drawImage(this.img, this.x + ((blockSize - this.size) / 2), this.y + ((blockSize - this.size) / 2), this.size, this.size);
