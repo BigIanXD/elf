@@ -161,6 +161,8 @@ function retry(){
     doodle.x = doodleStartPos.x;
     doodle.y = doodleStartPos.y;
     doodle.Direction = Dir.left;
+    tmpdirection = Dir.left;
+    doodle.switch_costume(doodle.Direction);
     doodle.determine_dir(doodle.x/blockSize, doodle.y/blockSize);
     DoodleInterval = setInterval('doodle.interval()', doodleStepDelay);
 }
