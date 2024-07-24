@@ -33,7 +33,7 @@ class Sprite{
             ctx.save();
             ctx.scale(zoom, zoom);
             let pos = new Position(this.x, this.y);
-            if(this.enablePadding) pos = this.toBoardPos();
+            pos = this.toBoardPos();
             ctx.drawImage(this.img, pos.x, pos.y, this.size, this.size);
             ctx.restore();
         }
@@ -80,13 +80,18 @@ class Sprite{
 class SnappedSprite extends Sprite{
     constructor(x, y, size){
         super(x, y, size)
+        this.grid = new Position();
+        this.gridColor = "#ffffff"; // Optional: the color of grid pos drawn in canvas
+        this.updateGrid();
+        this.gridPosIcon = new Sprite(this.grid.x, this.grid.y, 30);
+        this.gridPosIcon.costume[0].src = "src\\img\\grid_pos.png";
         this.GridSize = blockSize;
         this.Direction = Dir.right;
         this.speed = 5;
         this.obstacle = [Block.wall];
     }
     isGrid(pos){
-        if(pos.x%blockSize===0 && pos.y%blockSize===0){
+        if(pos.x %this.GridSize===0 && pos.y %this.GridSize===0){
             return true;
         }return false;
     }
@@ -98,6 +103,31 @@ class SnappedSprite extends Sprite{
         }
         return false;
     }
+    /**
+     * Draw Current Grid of the Sprite
+     */
+    drawGrid(){
+        let pos = this.Grid_to_GroundPos(this.grid);
+        this.gridPosIcon.x = pos.x;
+        this.gridPosIcon.y = pos.y;
+        this.gridPosIcon.draw();
+    }
+    /**
+     * if pos is just in Grid -> set to this grid (diff with updateGrid & _get_newly_touched_block)
+     * if not -> set to the grid position forward
+     */
+    updateGrid(){
+        let pos = new Position(this.x, this.y);
+        let dir = this.Direction;
+        if(this.isGrid(pos)) this.grid = this.Ground_to_GridPos(pos);
+        else this.grid = this._get_newly_touched_block(pos, dir);
+    }
+    /**
+     * @param {Position} pos current position
+     * @param {Dir} dir current direction
+     * @returns {Position} if pos is just in Grid -> return adjoining grid position based on dir
+     * @returns if not -> return the grid position forward
+     */
     _get_newly_touched_block(pos, dir){
         let x = pos.x/blockSize, y = pos.y/blockSize;
         if(this.isGrid(pos)){
@@ -124,8 +154,11 @@ class SnappedSprite extends Sprite{
             return true;
         }return false;
     }
-    Maze_to_GroundPos(pos){
-        return new Position(pos.x*blockSize, pos.y*blockSize);
+    Ground_to_GridPos(pos){
+        return new Position(Math.floor(pos.x/this.GridSize), Math.floor(pos.y/this.GridSize));
+    }
+    Grid_to_GroundPos(pos){
+        return new Position(pos.x*this.GridSize, pos.y*this.GridSize);
     }
     try_move(dir, step){
         ////console.log('try_move', this.x, this.y);
@@ -133,7 +166,7 @@ class SnappedSprite extends Sprite{
         let canMove = true;
         let reachGrid = false;
         let new_grid = this._get_newly_touched_block(pos, dir);
-        let new_pos = this.Maze_to_GroundPos(new_grid);
+        let new_pos = this.Grid_to_GroundPos(new_grid);
         let steps_remaining = step;
 
         if(step=== 0 || this.isObstacle(new_grid)) {
@@ -220,5 +253,6 @@ class SnappedSprite extends Sprite{
             this.y = result.new_pos.y;
             //console.log('moveGhost', this.Direction, "to", this.x, this.y)
         }
+        this.updateGrid();
     }
 };

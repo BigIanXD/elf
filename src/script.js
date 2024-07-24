@@ -107,8 +107,8 @@ function redraw(timeStamp){
     else{
         let duration = (timeStamp - previousStamp)/1000;
         previousStamp = timeStamp;
-        console.log(`duration:${duration}`);
-        console.log(`fps:${1/duration}`);
+        /*console.log(`duration:${duration}`);
+        console.log(`fps:${1/duration}`);*/
     }
     ctx.save();
     ctx.fillStyle = "rgba(4, 1, 51, 0.995)"
@@ -121,6 +121,7 @@ function redraw(timeStamp){
     doodle.draw();
     for(let i = 0; i < 4; i++){
         ghost[i].draw();
+        ghost[i].drawGrid();
         if(ghost[i].showRoute)
             ghost[i].drawroute();
     }
@@ -133,7 +134,8 @@ function die(){
     for(let i = 0; i < 4; i++){
         clearInterval(GhostInterval[i]);
         GhostInterval[i] = 0;
-        clearTimeout(GhostTimeout[i])
+        clearTimeout(GhostTimeout[i]);
+        GhostTimeout[i] = 0;
     }
     clearInterval(DoodleInterval);
     clearInterval(DieInterval); // Prevent calling die continuously and crashing the game
@@ -153,7 +155,7 @@ function retry(){
         GhostInterval[i] = 0;
         ghost[i].x = ghostStartPos[i].x*blockSize;
         ghost[i].y = ghostStartPos[i].y*blockSize;
-        ghost[i].route = []
+        ghost[i].route = [];
         GhostTimeout[i] = setTimeout(function(){
             GhostInterval[i] = setGhostInterval(i);
         }, ghostOutTime[i]*1000);
@@ -163,7 +165,7 @@ function retry(){
     doodle.Direction = Dir.left;
     tmpdirection = Dir.left;
     doodle.switch_costume(doodle.Direction);
-    doodle.determine_dir(doodle.x/blockSize, doodle.y/blockSize);
+    doodle.determine_dir(new Position(doodle.x/blockSize, doodle.y/blockSize));
     DoodleInterval = setInterval('doodle.interval()', doodleStepDelay);
 }
 function reset(){

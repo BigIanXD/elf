@@ -12,9 +12,11 @@ class Ghost extends SnappedSprite{
         this.obstacle = [Block.wall];
         this.route = [];
         this.mode = GhostMode.Chase;
+        this.inHouse = true;
         this.id = id;
         this.showRoute = false;
         this.back_index = 0;
+        this.force_reverse = false;
         this.costume[0].src = "src\\img\\ghost.png";
         this.costume[1] = new Image();
         this.costume[1].src = "src\\img\\ghost4.png";
@@ -22,6 +24,7 @@ class Ghost extends SnappedSprite{
         this.costume[2].src = "src\\img\\ghost_eyes.png";
         this.costume[3] = new Image();
         this.costume[3].src = "src\\img\\ghost5.png";
+        this.gridPosIcon.costume[0].src = `src\\img\\grid_pos${id}.png`;
     }
     /*move(){
         if(this.Direction === Dir.right) this.x+= this.speed;
@@ -167,6 +170,7 @@ class Ghost extends SnappedSprite{
         })
     }
     determine_dir(grid_pos){
+        console.log(`mode: ${this.mode}`);
         //console.log('ghost.determine_dir()');
         if(this.mode === GhostMode.Frightened){
             let cnt = 0, ho_cnt = 0, ve_cnt =0 ;
@@ -224,6 +228,7 @@ class Ghost extends SnappedSprite{
         }
     }*/
     switch_mode(mode){
+        console.log(`id${this.id} switch to ${mode}`)
         let hasInterval = false;
         if(GhostInterval[this.id]){
             clearInterval(GhostInterval[this.id]);
@@ -246,6 +251,11 @@ class Ghost extends SnappedSprite{
             this.back_index = 0;
             this.bfs(ghostStartPos[this.id]);
             //console.log(this.route);
+        }
+        if(mode === GhostMode.Eaten || this.inHouse === true){
+            this.gridPosIcon.hide();
+        }else{
+            this.gridPosIcon.show();
         }
         if(hasInterval)
             GhostInterval[this.id] = setGhostInterval(this.id);
