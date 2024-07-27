@@ -18,12 +18,31 @@ var Frightened_DisablingTimeout = [0, 0, 0, 0];
 var DieInterval = 0;
 var previousStamp = null;
 
-new_maze.open(arrwewe)
+var Scatter_Chase_duration = [
+    [7, 20, 7, 20, 5, 20, 5], //  level == 1
+    [7, 20, 7, 20, 5, 1033, 1/60], // 2 <= level  < 5
+    [5, 20, 5, 20, 5, 1037, 1/60] // level >= 5
+]; // unit: (sec)
+var scd = Scatter_Chase_duration;
+for(let i = 0; i < scd.length; i++){
+    for(let j = 0; j < scd[i].length; j++){
+        scd[i][j]*=1000;
+    }
+}
+var Scatter_Chase_timer = new ArrayTimer(function(){
+    if(Ghost.mode === GhostMode.Chase) Ghost.switch_mode(GhostMode.Scatter);
+    else if(Ghost.mode === GhostMode.Scatter) Ghost.switch_mode(GhostMode.Chase);
+}, Scatter_Chase_duration[0]);
+
+
+
+new_maze.open(maze_arr)
 setMaze(new_maze)
 score.x = playBoard.width;
 score.y = playBoard.padding.y;
 getDoodleStartPos();
 getGhostStartPos();
+getGhostScatterPos();
 read_success = true;
     /*.then(()=>{
         setMaze(new_maze)
@@ -122,14 +141,16 @@ function redraw(timeStamp){
     for(let i = 0; i < 4; i++){
         ghost[i].draw();
         ghost[i].drawGrid();
+        ghost[i].drawTarget();
         if(ghost[i].showRoute)
             ghost[i].drawroute();
     }
+    doodle.drawGrid();
     requestAnimationFrame(redraw);
 }
 
 function die(){
-    //console.log("die");
+    console.log("die");
     doodle.Direction = Dir.stop;
     for(let i = 0; i < 4; i++){
         clearInterval(GhostInterval[i]);
@@ -155,17 +176,20 @@ function retry(){
         GhostInterval[i] = 0;
         ghost[i].x = ghostStartPos[i].x*blockSize;
         ghost[i].y = ghostStartPos[i].y*blockSize;
+        ghost[i].updateGrid();
         ghost[i].route = [];
         GhostTimeout[i] = setTimeout(function(){
             GhostInterval[i] = setGhostInterval(i);
         }, ghostOutTime[i]*1000);
     }
+    Scatter_Chase_timer.reset();
+    Scatter_Chase_timer.start();
     doodle.x = doodleStartPos.x;
     doodle.y = doodleStartPos.y;
     doodle.Direction = Dir.left;
     tmpdirection = Dir.left;
     doodle.switch_costume(doodle.Direction);
-    doodle.determine_dir(new Position(doodle.x/blockSize, doodle.y/blockSize));
+    doodle.determine_dir();
     DoodleInterval = setInterval('doodle.interval()', doodleStepDelay);
 }
 function reset(){

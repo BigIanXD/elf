@@ -80,12 +80,19 @@ class Sprite{
 class SnappedSprite extends Sprite{
     constructor(x, y, size){
         super(x, y, size)
+        // grid
         this.grid = new Position();
         this.gridColor = "#ffffff"; // Optional: the color of grid pos drawn in canvas
         this.updateGrid();
         this.gridPosIcon = new Sprite(this.grid.x, this.grid.y, 30);
         this.gridPosIcon.costume[0].src = "src\\img\\grid_pos.png";
         this.GridSize = blockSize;
+        // target grid
+        this.enableTarget = false;
+        this.targetGridPos = new Position(0, 0);
+        this.targetPosIcon = new Sprite(this.targetGridPos.x, this.targetGridPos.y, 30);
+        this.targetPosIcon.costume[0].src = "src\\img\\target_pos.png";
+        
         this.Direction = Dir.right;
         this.speed = 5;
         this.obstacle = [Block.wall];
@@ -111,6 +118,15 @@ class SnappedSprite extends Sprite{
         this.gridPosIcon.x = pos.x;
         this.gridPosIcon.y = pos.y;
         this.gridPosIcon.draw();
+    }
+    drawTarget(){
+        let pos = this.Grid_to_GroundPos(this.targetGridPos);
+        this.targetPosIcon.x = pos.x;
+        this.targetPosIcon.y = pos.y;
+        this.targetPosIcon.draw();
+    }
+    updateTarget(){
+        
     }
     /**
      * if pos is just in Grid -> set to this grid (diff with updateGrid & _get_newly_touched_block)
@@ -146,6 +162,14 @@ class SnappedSprite extends Sprite{
         return new Position(x, y);
         //get_2nd_closest_block(x, y);
     }
+    _get_relative_grid(gridPos, dir, step=1){
+        let x=gridPos.x, y=gridPos.y;
+        if(dir === Dir.right) x+=step;
+        else if(dir === Dir.left) x-=step;
+        else if(dir === Dir.up) y-=step;
+        else if(dir === Dir.down) y +=step;
+        return new Position(x, y);
+    }
     touchWall(dir=this.Direction){
         let pos = this._get_newly_touched_block(new Position(this.x, this.y), dir);
         ////console.log("touchWall",pos);
@@ -171,6 +195,7 @@ class SnappedSprite extends Sprite{
 
         if(step=== 0 || this.isObstacle(new_grid)) {
             canMove = false;
+            new_pos = pos;
         }else{
             if(dir === Dir.right){
                 pos.x+= step;
@@ -202,17 +227,29 @@ class SnappedSprite extends Sprite{
                 else if(dir === Dir.left) new_pos.x-=steps_remaining;
                 else if(dir === Dir.up) new_pos.y-=steps_remaining;
                 else if(dir === Dir.down) new_pos.y+=steps_remaining;
+                steps_remaining = 0;
             }
         }
         return {
-            canMove: canMove, //若為false, 則後面訊息不得參考
-            reachGrid: reachGrid,
+            canMove: canMove, //若為false, 則new_grid 不得參考
+            reachGrid: reachGrid, //若為false, 則new_grid 不得參考
             steps_remaining: steps_remaining,
             new_grid: new_grid,
             new_pos: new_pos
         }
     }
-    determine_dir(grid_pos){
+    determine_dir(){
+
+    }
+    touch_grid(){
+        this.updateGrid();
+        this.updateTarget();
+        if(this.enableTarget && this.grid.x===this.targetGridPos.x && this.grid.y===this.targetGridPos.y){
+            this.touch_target();
+        }
+        this.determine_dir();
+    }
+    touch_target(){
 
     }
     interval(){
@@ -227,15 +264,16 @@ class SnappedSprite extends Sprite{
     move(){
         //console.log('SnappedSprite.move()');
         let steps_remaining = this.speed;
-        
+        let time_remaining = 1;
         if(this.Direction == Dir.stop){
             return;
         }
-        let result = this.try_move(this.Direction, steps_remaining);
+        /*let result = this.try_move(this.Direction, steps_remaining);
         if(!result.canMove && this.isGrid(new Position(this.x, this.y))) {
             //if(this === ghost[0]) //console.log('ghost.move()!!', this.x, this.y, this.Direction)
-            this.determine_dir(new Position(this.x/blockSize, this.y/blockSize));
+            this.touch_grid();
         }
+        
         while(result.canMove && result.reachGrid){
             //console.log(result);
             //console.log(result.new_grid);
@@ -244,9 +282,21 @@ class SnappedSprite extends Sprite{
             this.x = result.new_pos.x;
             this.y = result.new_pos.y;
             //if(this === ghost[0]) console.log('ghost.move()', this.x, this.y, this.Direction)
-            this.determine_dir(result.new_grid);
+            this.touch_grid();
             result = this.try_move(this.Direction, steps_remaining);
-        }
+        }*/
+        let result = this.try_move(this.Direction, steps_remaining);
+        do{
+            //result = this.try_move(this.Direction, steps_remaining);
+            //if(!result.canMove) console.log("can't move");
+            this.x = result.new_pos.x;
+            this.y = result.new_pos.y;
+            if(this.isGrid(result.new_pos)){
+                this.touch_grid();
+            }
+            steps_remaining = result.steps_remaining;
+            result = this.try_move(this.Direction, steps_remaining);
+        }while(result.canMove && result.reachGrid);
         if(result.canMove){
             
             this.x = result.new_pos.x;

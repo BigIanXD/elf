@@ -5,6 +5,12 @@ class Position{
 		this.x = x;
 		this.y = y;
 	}
+    static distance(a, b){
+        return Math.pow(Math.pow((a.y-b.y), 2)+Math.pow((a.x-b.x), 2), 0.5);
+    }
+    static sDistance(a, b){ // square of the distance
+        return Math.pow((a.y-b.y), 2)+Math.pow((a.x-b.x), 2);
+    }
 };
 
 
@@ -17,14 +23,14 @@ const doodleStepDelay = 30;
 const MaxHP = 4;
 
 const Dir = {
-    left: 0,
-    right: 1,
-    up: 2,
-    down: 3,
+    right: 0,
+    down: 1,
+    left: 2,
+    up: 3,
     stop: 4
 };
 var dir_to_string = function(i){
-    return ["left", "right", "up", "down", "stop"][i]
+    return ["right", "down", "left", "up", "stop"][i]
 }
 var reverse_dir = function(dir){
     if(dir === Dir.left) return Dir.right;

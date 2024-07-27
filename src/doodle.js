@@ -6,11 +6,14 @@ class Doodle extends SnappedSprite{
             this.costume[i] = new Image();
             this.costume[i].src = "src\\img\\doodle_" + dir_to_string(i) + ".png";
         }
+        this.enableTarget = false;
         this.speed = doodleStep;
         this.obstacle.push(Block.door);
         this.hp = MaxHP;
         this.score = 0;
         this.noclip = false;
+        this.gridPosIcon.costume[0].src = "src\\img\\grid_posD.png";
+        this.targetPosIcon.costume[0].src = "src\\img\\target_posD.png";
     }
     /*move(){
         if(this.Direction === Dir.right) this.x+= this.speed;
@@ -54,7 +57,7 @@ class Doodle extends SnappedSprite{
             }
         }
     }
-    determine_dir(grid_pos){
+    determine_dir(){
         //console.log("doodle.determine_dir()", tmpdirection);
         if(this.Direction !== tmpdirection){
             if(!this.touchWall(tmpdirection)){

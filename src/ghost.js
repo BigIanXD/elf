@@ -3,16 +3,31 @@ const GhostMode = {
     Scatter: 1,
     Frightened: 2,
     Eaten: 3
-}
+};
+const GhostLife = {
+    stop: -1,
+    inHouse: 0,
+    goingOut: 1,
+    outside: 2,
+    eaten: 3
+};
+const GhostID = {
+    Blinky: 0,
+    Pinky: 1,
+    Inky: 2,
+    Clyde: 3
+};
 class Ghost extends SnappedSprite{
+    static mode = Ghost.Chase;
     constructor(id, x, y){
         super(x, y, 35);
         this.Direction = Dir.right;
-        this.speed = 2.5;
+        this.speed = 7;
         this.obstacle = [Block.wall];
         this.route = [];
         this.mode = GhostMode.Chase;
-        this.inHouse = true;
+        this.lifeState = GhostLife.stop;
+        this.enableTarget = true;
         this.id = id;
         this.showRoute = false;
         this.back_index = 0;
@@ -25,6 +40,7 @@ class Ghost extends SnappedSprite{
         this.costume[3] = new Image();
         this.costume[3].src = "src\\img\\ghost5.png";
         this.gridPosIcon.costume[0].src = `src\\img\\grid_pos${id}.png`;
+        this.targetPosIcon.costume[0].src = `src\\img\\target_pos${id}.png`;
     }
     /*move(){
         if(this.Direction === Dir.right) this.x+= this.speed;
@@ -41,14 +57,6 @@ class Ghost extends SnappedSprite{
             }
         }
         return true;
-    }*/
-    /*_get_newly_touched_block(dir){
-        let x = this.x/blockSize, y = this.y/blockSize;
-        if(dir === Dir.right) x+= 1;
-        else if(dir === Dir.left) x-= 1;
-        else if(dir === Dir.up) y-= 1;
-        else if(dir === Dir.down) y+= 1;
-        return new Position(x, y);
     }*/
     /*isWall(block){
         if(block === Block.wall) return true;
@@ -152,6 +160,57 @@ class Ghost extends SnappedSprite{
         }
         return this.bfs(doodlePos);
     }
+    updateTarget(){
+        if(this.lifeState === GhostLife.outside){
+            if(this.mode === GhostMode.Frightened);
+            else if(this.mode === GhostMode.Scatter){
+                this.targetGridPos = structuredClone(ghostScatterPos);
+            }
+            else if(this.lifeState === GhostLife.outside){
+                switch(this.id){
+                    case GhostID.Blinky:
+                        this.targetGridPos = doodle.grid;
+                        break;
+                    case GhostID.Pinky:
+                        this.targetGridPos = this._get_relative_grid(doodle.grid, doodle.Direction, 2);
+                        break;
+                    case GhostID.Inky:
+                        let two = this._get_relative_grid(doodle.grid, doodle.Direction, 2)
+                        this.targetGridPos.x = 2*two.x - ghost[GhostID.Blinky].grid.x;
+                        this.targetGridPos.y = 2*two.y - ghost[GhostID.Blinky].grid.y;
+                        break;
+                    case GhostID.Clyde:
+                        //console.log('Clyde distance', Position.distance(ghost[GhostID.Clyde].grid, doodle.grid));
+                        if(Position.distance(ghost[GhostID.Clyde].grid, doodle.grid) < 8){
+                            this.targetGridPos = structuredClone(ghostScatterPos[GhostID.Clyde]);
+                        }else{
+                            this.targetGridPos = structuredClone(doodle.grid);
+                        }
+                }
+            }
+        }else{
+        }
+    }
+    target_search(){
+        let t = this.targetGridPos;
+        let choices = this.get_dir_choice();
+        //console.log(this.grid, choices, "-------");
+        let g = this._get_relative_grid(this.grid, choices[0]);
+        let mDis = Position.sDistance(g, t); // the square of minimium distance
+        let mDir = choices[0]; // the direction which of the ghost position has the minimium distance from the target
+        //console.log(mDis, g);
+        for(let i = 1; i < choices.length; i++){ // iterate Dir Code
+            g = this._get_relative_grid(this.grid, choices[i]); // get adjoining grid pos based on the direction
+            let dis = Position.sDistance(g, t);
+            //console.log(dis, g);
+            if(dis <= mDis){
+                mDis = dis;
+                mDir = choices[i];
+            }
+        }
+        //console.log(mDis, mDir);
+        return mDir;
+    }
     drawroute(){
         this.route.forEach(p=>{
             ctx.save();
@@ -169,7 +228,19 @@ class Ghost extends SnappedSprite{
             ctx.restore();
         })
     }
-    determine_dir(grid_pos){
+    get_dir_choice(){ // get possible dir choices, which makes the ghost not hit obstacles
+        let cnt = 0, ho_cnt = 0, ve_cnt =0;
+        let next_dir = [];
+        if(!this.touchWall(Dir.left)) {next_dir.push(Dir.left); ho_cnt++; cnt++}
+        if(!this.touchWall(Dir.right)) {next_dir.push(Dir.right); ho_cnt++; cnt++}
+        if(!this.touchWall(Dir.up)) {next_dir.push(Dir.up); ve_cnt++; cnt++}
+        if(!this.touchWall(Dir.down)) {next_dir.push(Dir.down); ve_cnt++; cnt++}
+        if(cnt!==1)
+            next_dir.splice(next_dir.indexOf(reverse_dir(this.Direction)), 1);
+        next_dir.sort((a, b) => a-b);
+        return next_dir;
+    }
+    determine_dir(){
         console.log(`mode: ${this.mode}`);
         //console.log('ghost.determine_dir()');
         if(this.mode === GhostMode.Frightened){
@@ -199,66 +270,47 @@ class Ghost extends SnappedSprite{
                 this.switch_mode(GhostMode.Chase);
             }
         }else{ // Ghost.Chase
-            this.Direction = this.doodle_bfs();
-            ////console.log(this.Direction);
+            this.Direction = this.target_search();
+            //this.Direction = this.doodle_bfs();
         }
     }
-    /*interval(){
-        if(this.x % blockSize === 0 && this.y % blockSize === 0){
-            if(this.mode === GhostMode.Frightened){
-                //this.Direction = this.doodle_bfs();
-            }else if(this.mode === GhostMode.Eaten){
-                if(this.back_index < this.route.length-1){
-                    this.Direction = this._detect_dir(this.route[this.back_index], this.route[this.back_index+1]);
-                    this.back_index++;
-                }else{
-                    //console.log('bakc')
-                    this.back_index = 0;
-                    this.switch_mode(GhostMode.Chase);
-                }
-            }else{ // Ghost.Chase
-                this.Direction = this.doodle_bfs();
-                ////console.log(this.Direction);
-            }
-            if(!this.touchWall(this.Direction)){
-                this.move();
-            }
-        }else{
-            this.move();
-        }
-    }*/
     switch_mode(mode){
         console.log(`id${this.id} switch to ${mode}`)
-        let hasInterval = false;
+        /*let hasInterval = false;
         if(GhostInterval[this.id]){
             clearInterval(GhostInterval[this.id]);
             GhostInterval[this.id] = 0;
             hasInterval = true;
-        }
+        }*/
+        let prevMode = this.mode;
         this.mode = mode;
         if(mode === GhostMode.Chase){
             this.switch_costume(0);
-            this.speed = 2.5;
+            this.speed = 3;
+            this.targetPosIcon.show();
         }else if(mode=== GhostMode.Scatter){
             this.switch_costume(0);
-            this.speed = 2.5;
+            this.speed = 3;
+            this.targetPosIcon.show();
         }else if(mode === GhostMode.Frightened){
             this.switch_costume(1);
             this.speed = 2;
+            this.targetPosIcon.hide();
         }else if(mode === GhostMode.Eaten){
             this.switch_costume(2);
             this.speed = 10;
             this.back_index = 0;
             this.bfs(ghostStartPos[this.id]);
+            this.targetPosIcon.show();
             //console.log(this.route);
         }
-        if(mode === GhostMode.Eaten || this.inHouse === true){
+        if(mode === GhostMode.Eaten){
             this.gridPosIcon.hide();
         }else{
             this.gridPosIcon.show();
         }
-        if(hasInterval)
-            GhostInterval[this.id] = setGhostInterval(this.id);
+        /*if(hasInterval)
+            GhostInterval[this.id] = setGhostInterval(this.id);*/
     }
     static switch_mode(mode){
         for(let i = 0; i < 4; i++){
@@ -291,9 +343,10 @@ class Ghost extends SnappedSprite{
 
 var setGhostInterval = function(i){
     //console.log(`startGhost ${i}`);
+    ghost[i].lifeState = GhostLife.outside;
     return setInterval(function(){
         ghost[i].interval()
-    }, 25);
+    }, 30);
 }
 
 var getGhostStartPos = function(){
@@ -313,13 +366,20 @@ var getGhostStartPos = function(){
         count++;
     }
 }
+var getGhostScatterPos = function(){
+    let w = current_maze.width, h = current_maze.height;
+    ghostScatterPos[GhostID.Blinky] = new Position(w-1, -1);
+    ghostScatterPos[GhostID.Pinky] = new Position(0, -1);
+    ghostScatterPos[GhostID.Inky] = new Position(w-1, h);
+    ghostScatterPos[GhostID.Clyde] = new Position(0, h);
+}
 
 var ghost = [];
 for(let i = 0; i < 4; i++){
     ghost.push(new Ghost(i, 0, 0));
     ghost[i].costume[0].src = `src/img/ghost${i}.png`;
 }
-var ghostOutTime = [0, 8, 16, 24];
+var ghostOutTime = [0, 0, 0, 0];
 var ghostColor = [
     "#ff0000",
     "#ff99cc",
@@ -329,5 +389,9 @@ var ghostColor = [
 var ghostStartPos = new Array(ghost.length);
 for(let i = 0; i < ghost.length; i++){
     ghostStartPos[i] = new Position(0, 0);
+}
+var ghostScatterPos = new Array(ghost.length);
+for(let i = 0; i < ghost.length; i++){
+    ghostScatterPos = new Position(0, 0);
 }
 //ghost.x = 360; ghost.y = 280
