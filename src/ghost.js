@@ -18,7 +18,7 @@ const GhostID = {
     Clyde: 3
 };
 class Ghost extends SnappedSprite{
-    static mode = Ghost.Chase;
+    static globalMode = GhostMode.Chase;
     constructor(id, x, y){
         super(x, y, 35);
         this.Direction = Dir.right;
@@ -164,7 +164,7 @@ class Ghost extends SnappedSprite{
         if(this.lifeState === GhostLife.outside){
             if(this.mode === GhostMode.Frightened);
             else if(this.mode === GhostMode.Scatter){
-                this.targetGridPos = structuredClone(ghostScatterPos);
+                this.targetGridPos = structuredClone(ghostScatterPos[this.id]);
             }
             else if(this.lifeState === GhostLife.outside){
                 switch(this.id){
@@ -267,9 +267,10 @@ class Ghost extends SnappedSprite{
             }else{
                 //console.log('bakc')
                 this.back_index = 0;
-                this.switch_mode(GhostMode.Chase);
+                this.switch_mode(Ghost.globalMode);
+                this.lifeState = GhostLife.outside;
             }
-        }else{ // Ghost.Chase
+        }else{ // Ghost.Chase or Ghost.Scatter
             this.Direction = this.target_search();
             //this.Direction = this.doodle_bfs();
         }
@@ -284,6 +285,9 @@ class Ghost extends SnappedSprite{
         }*/
         let prevMode = this.mode;
         this.mode = mode;
+        if(prevMode === GhostMode.Chase || prevMode === GhostMode.Scatter){
+            this.force_reversed = true;
+        }
         if(mode === GhostMode.Chase){
             this.switch_costume(0);
             this.speed = 3;
@@ -302,6 +306,7 @@ class Ghost extends SnappedSprite{
             this.back_index = 0;
             this.bfs(ghostStartPos[this.id]);
             this.targetPosIcon.show();
+            this.lifeState = GhostLife.eaten;
             //console.log(this.route);
         }
         if(mode === GhostMode.Eaten){
@@ -314,7 +319,9 @@ class Ghost extends SnappedSprite{
     }
     static switch_mode(mode){
         for(let i = 0; i < 4; i++){
-            ghost[i].switch_mode(mode);
+            if(ghost[i].lifeState!==GhostLife.eaten && ghost[i].mode!==GhostMode.Frightened){
+                ghost[i].switch_mode(mode);
+            }
         }
         if(mode === GhostMode.Frightened){
             clearTimeout(FrightenedTimeout);
@@ -331,12 +338,15 @@ class Ghost extends SnappedSprite{
             }
             FrightenedTimeout = setTimeout(function(){
                 console.log('Switch back to Chase Mode');
+                Scatter_Chase_timer.resume();
                 for(let i = 0; i < 4; i++){
                     if(ghost[i].mode !== GhostMode.Eaten)
-                        ghost[i].switch_mode(GhostMode.Chase);
+                        ghost[i].switch_mode(Ghost.globalMode);
                 }
                 
             }, 7000)
+        }else{
+            Ghost.globalMode = mode;
         }
     }
 }

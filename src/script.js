@@ -19,6 +19,7 @@ var DieInterval = 0;
 var previousStamp = null;
 
 var Scatter_Chase_duration = [
+    //[1, 2, 3, 4, 5, 6, 7], testing
     [7, 20, 7, 20, 5, 20, 5], //  level == 1
     [7, 20, 7, 20, 5, 1033, 1/60], // 2 <= level  < 5
     [5, 20, 5, 20, 5, 1037, 1/60] // level >= 5
@@ -30,8 +31,8 @@ for(let i = 0; i < scd.length; i++){
     }
 }
 var Scatter_Chase_timer = new ArrayTimer(function(){
-    if(Ghost.mode === GhostMode.Chase) Ghost.switch_mode(GhostMode.Scatter);
-    else if(Ghost.mode === GhostMode.Scatter) Ghost.switch_mode(GhostMode.Chase);
+    if(Ghost.globalMode === GhostMode.Chase) Ghost.switch_mode(GhostMode.Scatter);
+    else if(Ghost.globalMode === GhostMode.Scatter) Ghost.switch_mode(GhostMode.Chase);
 }, Scatter_Chase_duration[0]);
 
 
@@ -114,6 +115,7 @@ var onloadFunction = function () {
             if(doodle.touched(current_maze.pelletList[i])){
                 current_maze.pelletList[i].hide();
                 doodle.score+=Pellet.score;
+                Scatter_Chase_timer.pause();
                 Ghost.switch_mode(GhostMode.Frightened);
             }
         }
@@ -130,6 +132,7 @@ function redraw(timeStamp){
         console.log(`fps:${1/duration}`);*/
     }
     ctx.save();
+    ctx.scale(zoom, zoom);
     ctx.fillStyle = "rgba(4, 1, 51, 0.995)"
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
@@ -168,10 +171,11 @@ function die(){
         if(doodle.hp <= 0) reset();
         else retry();
     }, 2000);
+    Scatter_Chase_timer.reset();
 }
 function retry(){
     //console.log("retry");
-    Ghost.switch_mode(GhostMode.Chase);
+    Ghost.switch_mode(GhostMode.Scatter);
     for(let i = 0; i < ghost.length; i++){
         GhostInterval[i] = 0;
         ghost[i].x = ghostStartPos[i].x*blockSize;
@@ -182,7 +186,6 @@ function retry(){
             GhostInterval[i] = setGhostInterval(i);
         }, ghostOutTime[i]*1000);
     }
-    Scatter_Chase_timer.reset();
     Scatter_Chase_timer.start();
     doodle.x = doodleStartPos.x;
     doodle.y = doodleStartPos.y;
