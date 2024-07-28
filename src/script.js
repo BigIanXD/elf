@@ -4,7 +4,11 @@ var doodle = new Doodle(0, 0);
 var tmpdirection = doodle.Direction;
 var score = new Label(1000, 60, "Score: 0");
 score.align = "right";
-var hpView = new ViewHP(10, 5);
+var level_view = new Label(140, 60, "Level: 1");
+level_view.align = "left";
+var hpView = new ViewHP(10, 30);
+var level = 1;
+var food_eaten_cnt = 0;
 var new_maze = new Maze();
 let read_success = false;
 
@@ -17,6 +21,7 @@ var FrightenedTimeout = 0;
 var Frightened_DisablingTimeout = [0, 0, 0, 0];
 var DieInterval = 0;
 var previousStamp = null;
+var lvl_up_timer = new Timer(null, 2000);
 
 var Scatter_Chase_duration = [
     //[1, 2, 3, 4, 5, 6, 7], testing
@@ -103,20 +108,28 @@ var onloadFunction = function () {
     
     //console.log('onload')
     FoodInterval = setInterval(function(){
-        for(let i=0; i<current_maze.foodList.length; i++){
-            if(doodle.touched(current_maze.foodList[i])){
-                current_maze.foodList[i].hide();
+        let cm = current_maze;
+        for(let i=0; i<cm.foodList.length; i++){
+            if(doodle.touched(cm.foodList[i])){
+                cm.foodList[i].hide();
                 doodle.score+=Food.score;
+                food_eaten_cnt++;
+                if(food_eaten_cnt >= cm.foodList.length+cm.pelletList.length)
+                    level_up();
             }
         }
     }, 20)
     PelletInterval = setInterval(function(){
+        let cm = current_maze;
         for(let i=0; i<current_maze.pelletList.length; i++){
             if(doodle.touched(current_maze.pelletList[i])){
                 current_maze.pelletList[i].hide();
                 doodle.score+=Pellet.score;
                 Scatter_Chase_timer.pause();
                 Ghost.switch_mode(GhostMode.Frightened);
+                food_eaten_cnt++;
+                if(food_eaten_cnt >= cm.foodList.length+cm.pelletList.length)
+                    level_up();
             }
         }
     }, 20)
@@ -138,6 +151,8 @@ function redraw(timeStamp){
     ctx.restore();
     score.text = `Score: ${doodle.score}`;
     score.draw();
+    level_view.text = `Level: ${level}`;
+    level_view.draw();
     hpView.draw();
     current_maze.draw();
     doodle.draw();
@@ -151,9 +166,8 @@ function redraw(timeStamp){
     doodle.drawGrid();
     requestAnimationFrame(redraw);
 }
-
-function die(){
-    console.log("die");
+function reset_timer(){
+    console.log('reset_timer');
     doodle.Direction = Dir.stop;
     for(let i = 0; i < 4; i++){
         clearInterval(GhostInterval[i]);
@@ -166,18 +180,24 @@ function die(){
     clearTimeout(FrightenedTimeout);
     for(let i = 0; i < Frightened_DisablingTimeout.length; i++)
         clearTimeout(Frightened_DisablingTimeout[i]);
+    Scatter_Chase_timer.reset();
+    lvl_up_timer.reset();
+}
+function die(){
+    console.log("die");
+    reset_timer();
     DieInterval = setTimeout(function(){
         doodle.hp--;
         if(doodle.hp <= 0) reset();
         else retry();
     }, 2000);
-    Scatter_Chase_timer.reset();
 }
 function retry(){
-    //console.log("retry");
+    console.log("retry");
     Ghost.switch_mode(GhostMode.Scatter);
     for(let i = 0; i < ghost.length; i++){
         GhostInterval[i] = 0;
+        ghost[i].switch_mode(GhostMode.Scatter);
         ghost[i].x = ghostStartPos[i].x*blockSize;
         ghost[i].y = ghostStartPos[i].y*blockSize;
         ghost[i].updateGrid();
@@ -187,6 +207,7 @@ function retry(){
         }, ghostOutTime[i]*1000);
     }
     Scatter_Chase_timer.start();
+
     doodle.x = doodleStartPos.x;
     doodle.y = doodleStartPos.y;
     doodle.Direction = Dir.left;
@@ -196,8 +217,10 @@ function retry(){
     DoodleInterval = setInterval('doodle.interval()', doodleStepDelay);
 }
 function reset(){
+    food_eaten_cnt = 0;
     doodle.score = 0;
     doodle.hp = MaxHP;
+    level = 1;
     for(let i=0; i<current_maze.foodList.length; i++){
         current_maze.foodList[i].show();
     }
@@ -205,4 +228,26 @@ function reset(){
         current_maze.pelletList[i].show();
     }
     retry();
+}
+function level_up(){
+    console.log('level up');
+    reset_timer();
+    lvl_up_timer.callback = function(){
+        food_eaten_cnt = 0;
+        set_level(level+1);
+        for(let i=0; i<current_maze.foodList.length; i++){
+            current_maze.foodList[i].show();
+        }
+        for(let i=0; i<current_maze.pelletList.length; i++){
+            current_maze.pelletList[i].show();
+        }
+        retry();
+    }
+    lvl_up_timer.start();
+}
+function set_level(lvl){
+    level = lvl;
+    if(lvl === 1) Scatter_Chase_timer.reset(Scatter_Chase_duration[0]);
+    else if(lvl >= 2 && lvl < 5) Scatter_Chase_timer.reset(Scatter_Chase_duration[1]);
+    else Scatter_Chase_timer.reset(Scatter_Chase_duration[2]);
 }
