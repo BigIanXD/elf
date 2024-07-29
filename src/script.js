@@ -1,4 +1,5 @@
 var hasTouchScreen = false;
+var devMode = false;
 
 var doodle = new Doodle(0, 0);
 var tmpdirection = doodle.Direction;
@@ -158,12 +159,16 @@ function redraw(timeStamp){
     doodle.draw();
     for(let i = 0; i < 4; i++){
         ghost[i].draw();
-        ghost[i].drawGrid();
-        ghost[i].drawTarget();
+        if(devMode){
+            ghost[i].drawGrid();
+            ghost[i].drawTarget();
+        }
+        
         if(ghost[i].showRoute)
             ghost[i].drawroute();
     }
-    doodle.drawGrid();
+    if(devMode)
+        doodle.drawGrid();
     requestAnimationFrame(redraw);
 }
 function reset_timer(){
