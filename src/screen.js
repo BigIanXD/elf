@@ -14,7 +14,10 @@ var zoom; // canvas/playBoard
 $('body').css("height", $(window).height()) // set body height to full (making touching work)
 function setMaze(maze){
     current_maze = maze;
-    playBoard.height = (current_maze.height+1)*blockSize;
+	if(devMode)
+    	playBoard.height = (current_maze.height+1)*blockSize;
+	else
+	playBoard.height = (current_maze.height+0)*blockSize;
     playBoard.width = current_maze.width*blockSize;
     canvas_before_zoom.height = playBoard.height+playBoard.padding.y;
     canvas_before_zoom.width = playBoard.width+playBoard.padding.x;
