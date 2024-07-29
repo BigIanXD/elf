@@ -17,7 +17,7 @@ function setMaze(maze){
 	if(devMode)
     	playBoard.height = (current_maze.height+1)*blockSize;
 	else
-	playBoard.height = (current_maze.height+0)*blockSize;
+		playBoard.height = (current_maze.height+0)*blockSize;
     playBoard.width = current_maze.width*blockSize;
     canvas_before_zoom.height = playBoard.height+playBoard.padding.y;
     canvas_before_zoom.width = playBoard.width+playBoard.padding.x;
