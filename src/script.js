@@ -145,6 +145,7 @@ function redraw(timeStamp){
         /*console.log(`duration:${duration}`);
         console.log(`fps:${1/duration}`);*/
     }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.scale(zoom, zoom);
     ctx.fillStyle = "rgba(4, 1, 51, 0.995)"
