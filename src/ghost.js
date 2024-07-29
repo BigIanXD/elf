@@ -389,7 +389,7 @@ for(let i = 0; i < 4; i++){
     ghost.push(new Ghost(i, 0, 0));
     ghost[i].costume[0].src = `src/img/ghost${i}.png`;
 }
-var ghostOutTime = [0, 0, 0, 0];
+var ghostOutTime = [0, 8, 16, 24];
 var ghostColor = [
     "#ff0000",
     "#ff99cc",
